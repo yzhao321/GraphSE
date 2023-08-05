@@ -11,6 +11,10 @@ package ucsc.gse.operator;
 
 import java.io.Serializable;
 
+import rice.p2p.scribe.Topic;
+import ucsc.gse.graph.GseVertex;
+
 public interface GseOperator extends Serializable {
-    public int compute(int local, int reomote);
+    public void init(GseVertex target, Topic topic);
+    public boolean compute(GseVertex target, GseVertex ref, Topic topic);
 }

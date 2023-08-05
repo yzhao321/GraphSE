@@ -17,7 +17,7 @@ public class GseSimNetwork {
 
     /* ****************************** Default value ****************************** */
     // Pastry node
-    public static final int GSE_SIM_NETWORK_NODE_NUM = 25;
+    public static final int GSE_SIM_NETWORK_NODE_NUM = 20;
     // Network address and ports
     public static final String GSE_SIM_NETWORK_IP_ADDR = "10.0.0.187";
     public static final int GSE_SIM_NETWORK_BIND_PORT = 9050;

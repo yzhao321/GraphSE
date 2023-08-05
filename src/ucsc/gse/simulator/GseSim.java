@@ -57,6 +57,7 @@ public class GseSim extends Thread {
         // Divide data into workers
         simReadInput();
         simDivideInput();
+        simInitComputation();
     }
 
     /* ****************************** Interface for shell cmd ****************************** */
@@ -66,6 +67,11 @@ public class GseSim extends Thread {
 
     public void simSetInput(String filePath, boolean direction) {
         simInput.simInputSetInput(filePath, direction);;
+    }
+
+    public void simSetComputation(String str, int steps) {
+        simComputation.simCompSetTopicOperator(str);
+        simComputation.simCompSetSteps(steps);
     }
 
     public void simPrintTree() {
@@ -80,8 +86,12 @@ public class GseSim extends Thread {
         simScribeTree.startComputation();
     }
 
-    public void simGroup() {
+    public void simResultGroup() {
         simScribeTree.printGroupNum();
+    }
+
+    public void simResultMax() {
+        simScribeTree.printGroupMax();
     }
 
     /* ****************************** Start Procedure ****************************** */
@@ -131,7 +141,7 @@ public class GseSim extends Thread {
     private void simBuildTree() {
         simScribeTree = new GseScribeTopicTree(
             new Topic(new PastryIdFactory(env), simComputation.simCompTopicString),
-            simComputation.simComOperator,
+            simComputation.simCompOperator,
             simComputation.simCompSteps
         );
         simScribeTree.buildTree(simScribeNodes);
@@ -152,5 +162,9 @@ public class GseSim extends Thread {
 
     private void simDivideInput() {
         simInput.simInputDivideInput(simScribeNodes);
+    }
+
+    private void simInitComputation() {
+        simScribeTree.initGraphTopicVal();
     }
 }

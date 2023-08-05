@@ -11,14 +11,19 @@ package ucsc.gse.graph;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
+
+import rice.p2p.scribe.Topic;
 
 public class GseVertex implements Serializable {
     int id;
     int property;
     ArrayList<GseEdge> adjList = new ArrayList<>();
+    Map<Topic, Integer> topicMap = new HashMap<>();
 
     public GseVertex(int id) {
-        this(id, id);
+        this(id, 0);
     }
 
     public GseVertex(int id, int property) {
@@ -30,7 +35,28 @@ public class GseVertex implements Serializable {
         adjList.add(edge);
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public int getOutDegree() {
+        return adjList.size();
+    }
+
+    public void setTopicVal(Topic topic, int val) {
+        Integer valInteger = val;
+        topicMap.put(topic, valInteger);
+    }
+
+    public int getTopicVal(Topic topic) {
+        return topicMap.get(topic);
+    }
+
     public String toString() {
-        return "V[" + id + "]: " +  property;
+        String val = "";
+        for (Map.Entry<Topic, Integer> topicVal : topicMap.entrySet()) {
+            val += topicVal.toString();
+        }
+        return "V[" + id + "]: " + val;
     }
 }

@@ -9,29 +9,40 @@
 
 package ucsc.gse.simulator;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import ucsc.gse.operator.*;
 
 public class GseSimComputation {
     int simCompSteps = GSE_SIM_STEPS;
-    String simCompTopicString = GSE_SIM_TOPIC_CONN_COMP;
-    GseOperator simComOperator = new GseOperatorMax();
+    String simCompTopicString = GSE_SIM_TOPIC_CC_COMP;
+    GseOperator simCompOperator = null;
+
+    Map<String, GseOperator> simCompMap = new HashMap<>();
 
     /* ****************************** Default value ****************************** */
     // Computation topic
-    public static final String GSE_SIM_TOPIC_CONN_COMP = "ConnectedComponent";
+    public static final String GSE_SIM_TOPIC_CC_COMP = "CC";
+    public static final String GSE_SIM_TOPIC_PR_COMP = "PR";
     // Iteration steps
-    public static final int GSE_SIM_STEPS = 60;
+    public static final int GSE_SIM_STEPS = 40;
+
+    public GseSimComputation() {
+        // Computation operator type
+        simCompMap.put(GSE_SIM_TOPIC_CC_COMP, new GseOperatorCc());
+        simCompMap.put(GSE_SIM_TOPIC_PR_COMP, new GseOperatorPr());
+
+        simCompOperator = simCompMap.get(GSE_SIM_TOPIC_CC_COMP);
+    }
 
     /* ****************************** Interface for setting ********************** */
     public void simCompSetSteps(int steps) {
         simCompSteps = steps;
     }
 
-    public void simCompSetTopicString(String str) {
+    public void simCompSetTopicOperator(String str) {
         simCompTopicString = str;
-    }
-
-    public void simCompSetOperator(GseOperator operator) {
-        simComOperator = operator;
+        simCompOperator = simCompMap.get(str);
     }
 }

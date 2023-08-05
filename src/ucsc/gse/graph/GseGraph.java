@@ -12,9 +12,11 @@ package ucsc.gse.graph;
 import java.util.List;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import rice.p2p.scribe.Topic;
 import ucsc.gse.operator.GseOperator;
 
 public class GseGraph implements Serializable {
@@ -24,16 +26,15 @@ public class GseGraph implements Serializable {
     /* **************************** Graph set interface ***************************** */
     /* ******** Set Weight ******** */
     // Propaget property local
-    public boolean updateVertexPropertyInLocal(GseOperator operator) {
+    public boolean updateVertexPropertyInLocal(GseOperator operator, Topic topic) {
         boolean changedFlag = false;
         for (GseVertex vertex : vertexMap.values()) {
             for (GseEdge edge : vertex.adjList) {
-                if (vertexMap.containsKey(edge.dst)) {
-                    int rst = operator.compute(vertex.property, vertexMap.get(edge.dst).property);
-                    if (vertex.property != rst) {
-                        changedFlag = true;
-                        vertex.property = rst;
-                    }
+                if (!vertexMap.containsKey(edge.dst)) {
+                    continue;
+                }
+                if (operator.compute(vertexMap.get(edge.dst), vertex, topic)) {
+                    changedFlag = true;
                 }
             }
         }
@@ -41,16 +42,15 @@ public class GseGraph implements Serializable {
     }
 
     // Propagete property from remote graph to current graph
-    public boolean updateVertexPropertyFromRemote(GseOperator operator, GseGraph remoteGraph) {
+    public boolean updateVertexPropertyFromRemote(GseOperator operator, GseGraph remoteGraph, Topic topic) {
         boolean changedFlag = false;
         for (GseVertex remoteVertex : remoteGraph.vertexMap.values()) {
             for (GseEdge remoteEdge : remoteVertex.adjList) {
-                if (vertexMap.containsKey(remoteEdge.dst)) {
-                    int rst = operator.compute(vertexMap.get(remoteEdge.dst).property, remoteVertex.property);
-                    if (vertexMap.get(remoteEdge.dst).property != rst) {
-                        changedFlag = true;
-                        vertexMap.get(remoteEdge.dst).property = rst;
-                    }
+                if (!vertexMap.containsKey(remoteEdge.dst)) {
+                    continue;
+                }
+                if (operator.compute(vertexMap.get(remoteEdge.dst), remoteVertex, topic)) {
+                    changedFlag = true;
                 }
             }
         }
@@ -96,7 +96,7 @@ public class GseGraph implements Serializable {
     }
 
     /* ******** New graph ******** */
-    public List<Integer> aggregateRemoteList() {
+    public List<Integer> reduceRemoteList() {
         List<Integer> remoteList = new ArrayList<>();
         for (int vertexId : vertexMap.keySet()) {
             for (GseEdge edge : vertexMap.get(vertexId).adjList) {
@@ -109,7 +109,7 @@ public class GseGraph implements Serializable {
         return remoteList;
     }
 
-    public GseGraph aggregate(List<Integer> vertexIdList) {
+    public GseGraph reduce(List<Integer> vertexIdList) {
         GseGraph remoteGraph = new GseGraph();
         remoteGraph.direction = this.direction;
         for (Integer vertexId : vertexIdList) {
@@ -123,8 +123,12 @@ public class GseGraph implements Serializable {
         return vertexMap.size();
     }
 
-    public List<Integer> getVertexList() {
+    public List<Integer> getVertexIdList() {
         return new ArrayList<>(vertexMap.keySet());
+    }
+
+    public Collection<GseVertex> getVertexList() {
+        return vertexMap.values();
     }
 
     public int getProperty(int id) {

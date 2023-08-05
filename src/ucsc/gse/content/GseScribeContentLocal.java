@@ -30,7 +30,7 @@ public class GseScribeContentLocal implements GseScribeContent {
     @Override
     public int run(GseGraph localGraph) {
         int contentSignal = GseSignal.GSE_SIGNAL_LOCAL_HALT;
-        if (localGraph.updateVertexPropertyInLocal(operator)) {
+        if (localGraph.updateVertexPropertyInLocal(operator, topic)) {
             contentSignal = GseSignal.GSE_SIGNAL_LOCAL_PUB;
         }
         return contentSignal;

@@ -131,7 +131,7 @@ public class GseScribeNode implements Application, ScribeMultiClient {
     /* **************************** Graph Interface ***************************** */
     public void storeGraph(GseGraph graph) {
         appLocalGraph = graph;
-        appRemoteList = appLocalGraph.aggregateRemoteList();
+        appRemoteList = appLocalGraph.reduceRemoteList();
     }
 
     public void printGraph(String head) {
@@ -154,7 +154,7 @@ public class GseScribeNode implements Application, ScribeMultiClient {
 
             case GseSignal.GSE_SIGNAL_LOCAL_PUB:
                 appLocalHalt = false;
-                GseGraph sendRomoteGraph = appLocalGraph.aggregate(appRemoteList);
+                GseGraph sendRomoteGraph = appLocalGraph.reduce(appRemoteList);
                 GseScribeContentRemote publishContent = new GseScribeContentRemote(
                     appLocalEndpoint.getLocalNodeHandle(), sendRomoteGraph, content.getTopic(), appLocalTopicOperator.get(content.getTopic())
                 );

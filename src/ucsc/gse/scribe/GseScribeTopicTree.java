@@ -21,6 +21,7 @@ import rice.p2p.commonapi.NodeHandle;
 import rice.p2p.scribe.Topic;
 
 import ucsc.gse.content.*;
+import ucsc.gse.graph.GseVertex;
 import ucsc.gse.operator.*;
 
 public class GseScribeTopicTree {
@@ -63,10 +64,21 @@ public class GseScribeTopicTree {
         }
         treeRoot = getRoot(scribeNodes.get(0).appLocalEndpoint.getLocalNodeHandle());
 
-        // Add topic to master info
+        // Add topic info
         for (GseScribeNode scribeNode : scribeNodes) {
             scribeNode.appLocalTopics.add(treeTopic);
             scribeNode.appLocalTopicOperator.put(treeTopic, treeOperator);
+        }
+    }
+
+    public void initGraphTopicVal() {
+        for (GseScribeNode scribeNode : treeNodeMap.values()) {
+            if (scribeNode.appLocalGraph == null) {
+                continue;
+            }
+            for (GseVertex vertex : scribeNode.appLocalGraph.getVertexList()) {
+                treeOperator.init(vertex, treeTopic);
+            }
         }
     }
 
@@ -105,12 +117,30 @@ public class GseScribeTopicTree {
             if (node.appLocalGraph == null) {
                 continue;
             }
-            for (int vertexId : node.appLocalGraph.getVertexList()) {
-                groupIdSet.add(node.appLocalGraph.getProperty(vertexId));
+            for (GseVertex vertex : node.appLocalGraph.getVertexList()) {
+                groupIdSet.add(vertex.getTopicVal(treeTopic));
             }
         }
         System.out.println("------------------------------------------");
         System.out.println("\t    Group number " + groupIdSet.size());
+        System.out.println("------------------------------------------\n");
+    }
+
+    public void printGroupMax() {
+        int maxNum = 0;
+        GseVertex maxVertex = null;
+        for (GseScribeNode node : treeNodeMap.values()) {
+            if (node.appLocalGraph == null) {
+                continue;
+            }
+            for (GseVertex vertex : node.appLocalGraph.getVertexList()) {
+                int val = vertex.getTopicVal(treeTopic);
+                maxNum = maxNum > val ? maxNum : val;
+                maxVertex = vertex;
+            }
+        }
+        System.out.println("------------------------------------------");
+        System.out.println("  " + maxVertex + " : " + maxNum);
         System.out.println("------------------------------------------\n");
     }
 

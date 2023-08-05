@@ -60,7 +60,7 @@ public class GseSimInput {
 
     // Divide input to workers
     public void simInputDivideInput(ArrayList<GseScribeNode> scribeNodes) {
-        List<Integer> graphVertexList = inputGraph.getVertexList();
+        List<Integer> graphVertexList = inputGraph.getVertexIdList();
         int capacityNum = inputGraph.getVertexNum();
         int singleNum = capacityNum / scribeNodes.size();
 
