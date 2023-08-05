@@ -10,6 +10,7 @@
 package ucsc.gse.operator;
 
 import rice.p2p.scribe.Topic;
+import ucsc.gse.graph.GseGraph;
 import ucsc.gse.graph.GseVertex;
 
 public class GseOperatorCc implements GseOperator {
@@ -33,5 +34,10 @@ public class GseOperatorCc implements GseOperator {
     @Override
     public boolean aggregate() {
         return true;
+    }
+
+    @Override
+    public void fix(GseGraph localGraph, Topic topic) {
+        return;
     }
 }

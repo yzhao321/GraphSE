@@ -37,6 +37,8 @@ public class GseScribeContentLocal implements GseScribeContent {
             }
         } while (operator.aggregate() && (contentSignal == GseSignal.GSE_SIGNAL_LOCAL_PUB));
 
+        operator.fix(localGraph, topic);
+
         return contentSignal;
     }
 

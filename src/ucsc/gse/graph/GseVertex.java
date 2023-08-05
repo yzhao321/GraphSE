@@ -19,6 +19,10 @@ import rice.p2p.scribe.Topic;
 public class GseVertex implements Serializable {
     int id;
     int property;
+
+    int inDegree = 0;
+    int outDegree = 0;
+
     ArrayList<GseEdge> adjList = new ArrayList<>();
     Map<Topic, Integer> topicMap = new HashMap<>();
 
@@ -39,13 +43,16 @@ public class GseVertex implements Serializable {
         return id;
     }
 
+    public int getInDegree() {
+        return inDegree;
+    }
+
     public int getOutDegree() {
-        return adjList.size();
+        return outDegree;
     }
 
     public void setTopicVal(Topic topic, int val) {
-        Integer valInteger = val;
-        topicMap.put(topic, valInteger);
+        topicMap.put(topic, val);
     }
 
     public int getTopicVal(Topic topic) {

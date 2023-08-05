@@ -33,7 +33,7 @@ public class GseSimComputation {
         simCompMap.put(GSE_SIM_TOPIC_CC_COMP, new GseOperatorCc());
         simCompMap.put(GSE_SIM_TOPIC_PR_COMP, new GseOperatorPr());
 
-        simCompOperator = simCompMap.get(GSE_SIM_TOPIC_CC_COMP);
+        simCompOperator = simCompMap.get(simCompTopicString);
     }
 
     /* ****************************** Interface for setting ********************** */

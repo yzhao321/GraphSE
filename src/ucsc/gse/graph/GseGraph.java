@@ -80,11 +80,17 @@ public class GseGraph implements Serializable {
             vertexMap.put(edge.dst, new GseVertex(edge.dst));
         }
 
+        vertexMap.get(edge.src).outDegree++;
+        vertexMap.get(edge.dst).inDegree++;
+
         // Graph with direction do not add edge for dst
         if (direction) {
             return;
         }
         vertexMap.get(edge.dst).adjList.add(new GseEdge(edge.dst, edge.src));
+
+        vertexMap.get(edge.src).inDegree++;
+        vertexMap.get(edge.dst).outDegree++;
     }
 
     public GseGraph divide(List<Integer> vertexIdList) {

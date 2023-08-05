@@ -11,6 +11,7 @@
 package ucsc.gse.operator;
 
 import rice.p2p.scribe.Topic;
+import ucsc.gse.graph.GseGraph;
 import ucsc.gse.graph.GseVertex;
 
 public class GseOperatorPr implements GseOperator {
@@ -33,5 +34,14 @@ public class GseOperatorPr implements GseOperator {
     @Override
     public boolean aggregate() {
         return false;
+    }
+
+    @Override
+    public void fix(GseGraph localGraph, Topic topic) {
+        for (GseVertex vertex : localGraph.getVertexList()) {
+            if (vertex.getOutDegree() == 0 || vertex.getInDegree() == 0) {
+                vertex.setTopicVal(topic, (int) (vertex.getTopicVal(topic) * GSE_OPERATOR_PR_RANDOM_PARA));
+            }
+        }
     }
 }

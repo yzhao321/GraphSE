@@ -143,7 +143,6 @@ public class GseScribeTopicTree {
         }
         System.out.println("------------------------------------------");
         System.out.println(" " + maxVertex + " : " + maxNum);
-        System.out.println("------------------------------------------\n");
     }
 
     /* **************************** Recursive tree searching ********************************* */
