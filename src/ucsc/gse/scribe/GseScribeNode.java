@@ -146,11 +146,11 @@ public class GseScribeNode implements Application, ScribeMultiClient {
     private void processSignal(int contentSignal, GseScribeContent content) {
         switch (contentSignal) {
             case GseSignal.GSE_SIGNAL_LOCAL_HALT:
-                appLocalHalt = true;
                 if (appLocalHalt && appRemoteHalt) {
                     // appLocalEndpoint.route(null, new GseMsg(GseMsg.GSE_MSG_HALT, appLocalEndpoint.getLocalNodeHandle()), content.getSrc());
                     break;
                 }
+                appLocalHalt = true;
 
             case GseSignal.GSE_SIGNAL_LOCAL_PUB:
                 appLocalHalt = false;

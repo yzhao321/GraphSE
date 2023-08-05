@@ -17,4 +17,5 @@ import ucsc.gse.graph.GseVertex;
 public interface GseOperator extends Serializable {
     public void init(GseVertex target, Topic topic);
     public boolean compute(GseVertex target, GseVertex ref, Topic topic);
+    public boolean aggregate();
 }

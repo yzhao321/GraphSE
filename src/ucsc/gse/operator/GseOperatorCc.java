@@ -29,4 +29,9 @@ public class GseOperatorCc implements GseOperator {
         }
         return changedFlag;
     }
+
+    @Override
+    public boolean aggregate() {
+        return true;
+    }
 }

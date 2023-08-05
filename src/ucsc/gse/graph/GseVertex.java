@@ -57,6 +57,6 @@ public class GseVertex implements Serializable {
         for (Map.Entry<Topic, Integer> topicVal : topicMap.entrySet()) {
             val += topicVal.toString();
         }
-        return "V[" + id + "]: " + val;
+        return "V[" + id + ": " + val + "]";
     }
 }

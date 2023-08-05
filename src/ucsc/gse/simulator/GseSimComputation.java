@@ -26,7 +26,7 @@ public class GseSimComputation {
     public static final String GSE_SIM_TOPIC_CC_COMP = "CC";
     public static final String GSE_SIM_TOPIC_PR_COMP = "PR";
     // Iteration steps
-    public static final int GSE_SIM_STEPS = 40;
+    public static final int GSE_SIM_STEPS = 15;
 
     public GseSimComputation() {
         // Computation operator type

@@ -24,12 +24,14 @@ public class GseOperatorPr implements GseOperator {
 
     @Override
     public boolean compute(GseVertex target, GseVertex ref, Topic topic) {
-        if (ref.getOutDegree() == 0) {
-            return false;
-        }
         int targetValue = (int) ( (double)target.getTopicVal(topic) * GSE_OPERATOR_PR_RANDOM_PARA +
             (1.0 / ref.getOutDegree()) * (double)ref.getTopicVal(topic) * (1 - GSE_OPERATOR_PR_RANDOM_PARA) );
         target.setTopicVal(topic, targetValue);
         return true;
+    }
+
+    @Override
+    public boolean aggregate() {
+        return false;
     }
 }

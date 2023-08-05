@@ -135,12 +135,14 @@ public class GseScribeTopicTree {
             }
             for (GseVertex vertex : node.appLocalGraph.getVertexList()) {
                 int val = vertex.getTopicVal(treeTopic);
-                maxNum = maxNum > val ? maxNum : val;
-                maxVertex = vertex;
+                if (maxNum < val) {
+                    maxNum = val;
+                    maxVertex = vertex;
+                }
             }
         }
         System.out.println("------------------------------------------");
-        System.out.println("  " + maxVertex + " : " + maxNum);
+        System.out.println(" " + maxVertex + " : " + maxNum);
         System.out.println("------------------------------------------\n");
     }
 
