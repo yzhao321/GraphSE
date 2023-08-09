@@ -9,11 +9,14 @@
 
 package ucsc.gse.simulator;
 
+import java.net.InetAddress;
+
 public class GseSimNetwork {
-    int simNetNodeNum = GSE_SIM_NETWORK_NODE_NUM;
-    String simNetIpAddress = GSE_SIM_NETWORK_IP_ADDR;
+    InetAddress simNetIpAddress = null;
     int simNetBindPort = GSE_SIM_NETWORK_BIND_PORT;
     int simNetBootPort = GSE_SIM_NETWORK_BOOT_PORT;
+
+    int simNetNodeNum = GSE_SIM_NETWORK_NODE_NUM;
 
     /* ****************************** Default value ****************************** */
     // Pastry node
@@ -23,16 +26,32 @@ public class GseSimNetwork {
     public static final int GSE_SIM_NETWORK_BIND_PORT = 9050;
     public static final int GSE_SIM_NETWORK_BOOT_PORT = 9050;
 
+    public GseSimNetwork() {
+        try {
+            simNetIpAddress = InetAddress.getByName(GSE_SIM_NETWORK_IP_ADDR);
+        } catch (Exception e) {
+            System.out.println("Gse sim network error: " + e);
+        }
+    }
+
     /* ****************************** Interface for set/get ********************** */
     public void simNetSetNodeNum(int nodeNum) {
         simNetNodeNum = nodeNum;
+    }
+
+    public void simNetSetIpAddress() {
+        try {
+            simNetIpAddress = InetAddress.getLocalHost();
+        } catch (Exception e) {
+            System.out.println("Gse sim network error: " + e);
+        }
     }
 
     public int simNetGetNodeNum() {
         return simNetNodeNum;
     }
 
-    public String simNetGetIpAddress() {
+    public InetAddress simNetGetIpAddress() {
         return simNetIpAddress;
     }
 

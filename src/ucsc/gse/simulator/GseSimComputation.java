@@ -9,40 +9,42 @@
 
 package ucsc.gse.simulator;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import ucsc.gse.operator.*;
 
 public class GseSimComputation {
-    int simCompSteps = GSE_SIM_STEPS;
-    String simCompTopicString = GSE_SIM_TOPIC_CC_COMP;
-    GseOperator simCompOperator = null;
-
-    Map<String, GseOperator> simCompMap = new HashMap<>();
+    // Computation map from name to operator
+    Map<String, GseOperator> simCompMapOps = new HashMap<>();
+    Map<String, Integer> simCompMapStep = new HashMap<>();
+    // Computation list for simulator
+    List<String> simCompStrList = new ArrayList<>();
 
     /* ****************************** Default value ****************************** */
     // Computation topic
-    public static final String GSE_SIM_TOPIC_CC_COMP = "CC";
-    public static final String GSE_SIM_TOPIC_PR_COMP = "PR";
-    // Iteration steps
-    public static final int GSE_SIM_STEPS = 15;
+    public static final String GSE_COMP_TOPIC_CC = "CC";
+    public static final String GSE_COMP_TOPIC_PR = "PR";
+    public static final String GSE_COMP_TOPIC_DJ = "DJ";
+    // Computation steps
+    public static final int GSE_COMP_CC_STEPS = 25;
+    public static final int GSE_COMP_PR_STEPS = 10;
+    public static final int GSE_COMP_DJ_STEPS = 25;
 
     public GseSimComputation() {
         // Computation operator type
-        simCompMap.put(GSE_SIM_TOPIC_CC_COMP, new GseOperatorCc());
-        simCompMap.put(GSE_SIM_TOPIC_PR_COMP, new GseOperatorPr());
+        simCompMapOps.put(GSE_COMP_TOPIC_CC, new GseOperatorCc());
+        simCompMapOps.put(GSE_COMP_TOPIC_PR, new GseOperatorPr());
 
-        simCompOperator = simCompMap.get(simCompTopicString);
+        // Computation superstep
+        simCompMapStep.put(GSE_COMP_TOPIC_CC, GSE_COMP_CC_STEPS);
+        simCompMapStep.put(GSE_COMP_TOPIC_PR, GSE_COMP_PR_STEPS);
     }
 
     /* ****************************** Interface for setting ********************** */
-    public void simCompSetSteps(int steps) {
-        simCompSteps = steps;
-    }
-
-    public void simCompSetTopicOperator(String str) {
-        simCompTopicString = str;
-        simCompOperator = simCompMap.get(str);
+    public void simCompAddTopicOperator(String str) {
+        simCompStrList.add(str);
     }
 }

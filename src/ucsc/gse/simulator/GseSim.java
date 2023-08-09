@@ -34,9 +34,12 @@ public class GseSim extends Thread {
     PastryNodeFactory factory;
     InetSocketAddress bootSocketAddr;
 
-    // Gse scribe management
+    // Gse scribe node list
     ArrayList<GseScribeNode> simScribeNodes = new ArrayList<GseScribeNode>();
-    GseScribeTopicTree simScribeTree = null;
+    ArrayList<GseScribeNode> simScribeWorkerNodes = new ArrayList<GseScribeNode>();
+
+    // Gse scribe topic tree map
+    Map<String, GseScribeTopicTree> simTopicTreeMap = new HashMap<>();
 
     // Gse config
     GseSimNetwork simNet = new GseSimNetwork();
@@ -65,33 +68,38 @@ public class GseSim extends Thread {
         simNet.simNetSetNodeNum(nodeNum);
     }
 
+    public void simSetNetworkAddress() {
+        simNet.simNetSetIpAddress();
+    }
+
     public void simSetInput(String filePath, boolean direction) {
         simInput.simInputSetInput(filePath, direction);;
     }
 
-    public void simSetComputation(String str, int steps) {
-        simComputation.simCompSetTopicOperator(str);
-        simComputation.simCompSetSteps(steps);
+    public void simAddComputation(String str) {
+        simComputation.simCompAddTopicOperator(str);
     }
 
-    public void simPrintTree() {
-        simScribeTree.printTree();
+    public void simPrintTree(String treeStr) {
+        simTopicTreeMap.get(treeStr).printTree();
     }
 
-    public void simTriggerSuperstep() {
-        simScribeTree.publishUpdate();
+    public void simTriggerSuperstep(String treeStr) {
+        simTopicTreeMap.get(treeStr).publishUpdate();
     }
 
     public void simLaunchComputation() {
-        simScribeTree.startComputation();
+        for (GseScribeTopicTree topicTree : simTopicTreeMap.values()) {
+            topicTree.start();
+        }
     }
 
-    public void simResultGroup() {
-        simScribeTree.printGroupNum();
+    public void simResultGroup(String treeStr) {
+        simTopicTreeMap.get(treeStr).printGroupNum();
     }
 
-    public void simResultMax() {
-        simScribeTree.printGroupMax();
+    public void simResultMax(String treeStr) {
+        simTopicTreeMap.get(treeStr).printGroupMax();
     }
 
     /* ****************************** Start Procedure ****************************** */
@@ -100,7 +108,7 @@ public class GseSim extends Thread {
         try {
             env = new Environment();
             nidFactory = new RandomNodeIdFactory(env);
-            InetAddress bootaddr = InetAddress.getByName(simNet.simNetGetIpAddress());
+            InetAddress bootaddr = simNet.simNetGetIpAddress();
             bootSocketAddr = new InetSocketAddress(bootaddr, simNet.simNetGetBootPort());
             factory = new SocketPastryNodeFactory(nidFactory, simNet.simNetGetBindPort(), env);
 
@@ -139,21 +147,26 @@ public class GseSim extends Thread {
     }
 
     private void simBuildTree() {
-        simScribeTree = new GseScribeTopicTree(
-            new Topic(new PastryIdFactory(env), simComputation.simCompTopicString),
-            simComputation.simCompOperator,
-            simComputation.simCompSteps
-        );
-        simScribeTree.buildTree(simScribeNodes);
+        // Construct a topic tree for each computation
+        for (String compStr : simComputation.simCompStrList) {
+            Topic compTopic = new Topic(new PastryIdFactory(env), compStr);
+            GseScribeComputation simScribeComputation = new GseScribeComputation(
+                compTopic,
+                simComputation.simCompMapOps.get(compStr),
+                simComputation.simCompMapStep.get(compStr)
+            );
 
-        GseScribeNode master = null;
+            GseScribeTopicTree topicTree = new GseScribeTopicTree(compTopic, simScribeComputation);
+            topicTree.buildTree(simScribeNodes);
+            simTopicTreeMap.put(compStr, topicTree);
+        }
+
+        // Split the workers from masters
         for (GseScribeNode scribeNode : simScribeNodes) {
-            if (scribeNode.isRootOfTopics()) {
-                master = scribeNode;
-                break;
+            if (!scribeNode.isRootOfTopics()) {
+                simScribeWorkerNodes.add(scribeNode);
             }
         }
-        simScribeNodes.remove(master);
     }
 
     private void simReadInput() {
@@ -161,10 +174,12 @@ public class GseSim extends Thread {
     }
 
     private void simDivideInput() {
-        simInput.simInputDivideInput(simScribeNodes);
+        simInput.simInputDivideInput(simScribeWorkerNodes);
     }
 
     private void simInitComputation() {
-        simScribeTree.initGraphTopicVal();
+        for (GseScribeTopicTree topicTree : simTopicTreeMap.values()) {
+            topicTree.initGraphTopicVal();
+        }
     }
 }

@@ -47,7 +47,7 @@ public class GseClientShellCmd {
         cmdList.put("net",              (args) -> cmdSetSimNetwork(args));
         cmdList.put("input",            (args) -> cmdSetInputFile(args));
         cmdList.put("comp",             (args) -> cmdComp(args));
-        cmdList.put("init",             (args) -> cmdInit(args));
+        cmdList.put("deploy",           (args) -> cmdDeploy(args));
         cmdList.put("print",            (args) -> cmdPrintTree(args));
         cmdList.put("step",             (args) -> cmdTriggerStep(args));
         cmdList.put("launch",           (args) -> cmdLaunchComputation(args));
@@ -56,15 +56,15 @@ public class GseClientShellCmd {
 
         // Map cmd name to description
         cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("?",          "show cmd list"));
-        cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("net",        "set network by: net [nodeNum]"));
-        cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("input",      "set input by: input [fileName](path) [0/1](direction)"));
-        cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("comp",       "set computation by: comp [name] [steps]"));
-        cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("init",       "start simulator"));
-        cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("print",      "print scribe tree"));
-        cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("step",       "trigger supperstep step by step"));
+        cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("net",        "set network by: net [nodeNum] [option: auto-address]"));
+        cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("input",      "set input by: input [fileName] [direction](0/1)"));
+        cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("comp",       "add computation by: comp [treeName](CC/PR)"));
+        cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("deploy",     "start simulator"));
+        cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("print",      "print scribe tree by: print [treeName]"));
+        cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("step",       "trigger superstep step by step by: step [treeName]"));
         cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("launch",     "launch computation"));
-        cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("group",      "print group num"));
-        cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("max",        "print group max result"));
+        cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("group",      "print group result by: group [treeName]"));
+        cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("max",        "print max result by: max [treeName]"));
     }
 
     public Map<String, Function<List<String>, Boolean>> getCmdList() {
@@ -94,6 +94,9 @@ public class GseClientShellCmd {
         }
 
         clientSimulator.simSetNetwork(Integer.parseInt(args.get(GSE_CMD_NETWORK_ARG_NODE_NUM)));
+        if (args.size() > GSE_CMD_NETWORK_ARG_NUM) {
+            clientSimulator.simSetNetworkAddress();
+        }
         return true;
     }
 
@@ -113,36 +116,41 @@ public class GseClientShellCmd {
         return true;
     }
 
+    static final int GSE_CMD_TREE_ARG_NUM = 2;
+    static final int GSE_CMD_TREE_ARG_NAME = 1;
     // Config computation
-    static final int GSE_CMD_COMP_ARG_NUM = 3;
-    static final int GSE_CMD_COMP_ARG_NAME = 1;
-    static final int GSE_CMD_COMP_ARG_STEP = 2;
     public Boolean cmdComp(List<String> args) {
-        if (args.size() < GSE_CMD_INPUT_ARG_NUM) {
+        if (args.size() < GSE_CMD_TREE_ARG_NUM) {
             System.out.println("Error args.\n");
             return false;
         }
-        String compName = args.get(GSE_CMD_COMP_ARG_NAME);
-        int compSteps = Integer.parseInt(args.get(GSE_CMD_COMP_ARG_STEP));
-        clientSimulator.simSetComputation(compName, compSteps);
+        clientSimulator.simAddComputation(args.get(GSE_CMD_TREE_ARG_NAME));
         return true;
     }
 
     // Start simulator
-    public Boolean cmdInit(List<String> args) {
+    public Boolean cmdDeploy(List<String> args) {
         clientSimulator.start();
         return true;
     }
 
     // Print the scribe tree
     public Boolean cmdPrintTree(List<String> args) {
-        clientSimulator.simPrintTree();
+        if (args.size() < GSE_CMD_TREE_ARG_NUM) {
+            System.out.println("Error args.\n");
+            return false;
+        }
+        clientSimulator.simPrintTree(args.get(GSE_CMD_TREE_ARG_NAME));
         return true;
     }
 
     // Launch the computation step by step, that is, publish once
     public Boolean cmdTriggerStep(List<String> args) {
-        clientSimulator.simTriggerSuperstep();
+        if (args.size() < GSE_CMD_TREE_ARG_NUM) {
+            System.out.println("Error args.\n");
+            return false;
+        }
+        clientSimulator.simTriggerSuperstep(args.get(GSE_CMD_TREE_ARG_NAME));
         return true;
     }
 
@@ -154,13 +162,21 @@ public class GseClientShellCmd {
 
     // Print group result
     public Boolean cmdResultGroup(List<String> args) {
-        clientSimulator.simResultGroup();
+        if (args.size() < GSE_CMD_TREE_ARG_NUM) {
+            System.out.println("Error args.\n");
+            return false;
+        }
+        clientSimulator.simResultGroup(args.get(GSE_CMD_TREE_ARG_NAME));
         return true;
     }
 
     // Print max result
     public Boolean cmdResultMax(List<String> args) {
-        clientSimulator.simResultMax();
+        if (args.size() < GSE_CMD_TREE_ARG_NUM) {
+            System.out.println("Error args.\n");
+            return false;
+        }
+        clientSimulator.simResultMax(args.get(GSE_CMD_TREE_ARG_NAME));
         return true;
     }
 

@@ -22,13 +22,11 @@ import rice.p2p.scribe.Topic;
 
 import ucsc.gse.content.*;
 import ucsc.gse.graph.GseVertex;
-import ucsc.gse.operator.*;
 
-public class GseScribeTopicTree {
+public class GseScribeTopicTree extends Thread {
     // Computation
     Topic treeTopic;
-    GseOperator treeOperator;
-    int treeSteps;
+    GseScribeComputation treeComputation;
 
     // Tree management
     Map<NodeHandle, GseScribeNode> treeNodeMap = new HashMap<>(); // Nodes in this topic
@@ -38,13 +36,38 @@ public class GseScribeTopicTree {
     public static final int GSE_TREE_BUILD_WAIT_TIME = 1000;
     public static final int GSE_TREE_STEP_WAIT_TIME = 500;
 
-    public GseScribeTopicTree(Topic topic, GseOperator operator, int steps) {
+    public GseScribeTopicTree(Topic topic, GseScribeComputation computation) {
         treeTopic = topic;
-        treeOperator = operator;
-        treeSteps = steps;
+        treeComputation = computation;
     }
 
-    /* **************************** Topic tree interface ********************************* */
+    /* **************************** Topic tree computation ********************************* */
+    public void publishUpdate() {
+        treeNodeMap.get(treeRoot).publish(treeTopic, new GseScribeContentLocal(treeRoot, treeTopic, treeComputation.compOperator));
+    }
+
+    public void startComputation() {
+        System.out.println("\n\n");
+        for (int i = 0; i < treeComputation.compSteps; i++) {
+            System.out.println("\t " + treeTopic + " step " + i);
+            publishUpdate();
+            try {
+                new SimpleTimeSource().sleep(GSE_TREE_STEP_WAIT_TIME);
+            } catch (InterruptedException e) {
+                System.out.println("Gse sim wait error: " + e);
+            }
+            System.out.println("------------------------------------------");
+        }
+        System.out.println("\t " + treeTopic + " iteration End");
+        System.out.println("------------------------------------------\n");
+    }
+
+    @Override
+    public void run() {
+        startComputation();
+    }
+
+    /* **************************** Topic tree initialization ********************************* */
     public void buildTree(ArrayList<GseScribeNode> scribeNodes) {
         // Subscribe same topic for all nodes
         for (GseScribeNode scribeNode : scribeNodes) {
@@ -67,7 +90,7 @@ public class GseScribeTopicTree {
         // Add topic info
         for (GseScribeNode scribeNode : scribeNodes) {
             scribeNode.appLocalTopics.add(treeTopic);
-            scribeNode.appLocalTopicOperator.put(treeTopic, treeOperator);
+            scribeNode.appLocalTopicOperator.put(treeTopic, treeComputation.compOperator);
         }
     }
 
@@ -77,37 +100,18 @@ public class GseScribeTopicTree {
                 continue;
             }
             for (GseVertex vertex : scribeNode.appLocalGraph.getVertexList()) {
-                treeOperator.init(vertex, treeTopic);
+                treeComputation.compOperator.init(vertex, treeTopic);
             }
         }
     }
 
+
+    /* **************************** Topic tree result viewing ********************************* */
     public void printTree() {
         System.out.println("\n--------------Topic Tree-----------------");
         System.out.println("\t Topic: " + treeTopic);
         System.out.println("------------------------------------------");
         printChildren(treeRoot, 0);
-        System.out.println("------------------------------------------\n");
-    }
-
-    public void publishUpdate() {
-        treeNodeMap.get(treeRoot).publish(treeTopic, new GseScribeContentLocal(treeRoot, treeTopic, treeOperator));
-    }
-
-    public void startComputation() {
-        for (int i = 0; i < treeSteps; i++) {
-            System.out.println("------------------------------------------");
-            System.out.println("\t\t Step " + i);
-            System.out.println("------------------------------------------");
-            publishUpdate();
-            try {
-                new SimpleTimeSource().sleep(GSE_TREE_STEP_WAIT_TIME);
-            } catch (InterruptedException e) {
-                System.out.println("Gse sim wait error: " + e);
-            }
-            System.out.println("------------------------------------------\n");
-        }
-        System.out.println("\t      Iteration End");
         System.out.println("------------------------------------------\n");
     }
 
@@ -122,7 +126,7 @@ public class GseScribeTopicTree {
             }
         }
         System.out.println("------------------------------------------");
-        System.out.println("\t    Group number " + groupIdSet.size());
+        System.out.println("Result of group number: " + groupIdSet.size());
         System.out.println("------------------------------------------\n");
     }
 
@@ -142,7 +146,8 @@ public class GseScribeTopicTree {
             }
         }
         System.out.println("------------------------------------------");
-        System.out.println(" " + maxVertex + " : " + maxNum);
+        System.out.println("Result of max num: " + maxVertex + " --> " + maxNum);
+        System.out.println("------------------------------------------\n");
     }
 
     /* **************************** Recursive tree searching ********************************* */
