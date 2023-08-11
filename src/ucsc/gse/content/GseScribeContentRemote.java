@@ -31,7 +31,7 @@ public class GseScribeContentRemote implements GseScribeContent {
     @Override
     public int run(GseGraph localGraph) {
         int contentSignal = GseSignal.GSE_SIGNAL_REMOTE_HALT;
-        if (localGraph.updateVertexPropertyFromRemote(operator, remoteGraph, topic)) {
+        if (localGraph.updateVertexValueFromRemote(operator, remoteGraph, topic)) {
             contentSignal = GseSignal.GSE_SIGNAL_REMOTE_RECV;
         }
         return contentSignal;

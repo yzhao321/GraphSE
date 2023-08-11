@@ -12,7 +12,9 @@ package ucsc.gse.simulator;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import ucsc.gse.graph.*;
 import ucsc.gse.scribe.GseScribeNode;
@@ -25,6 +27,7 @@ public class GseSimInput {
     // Gse input storage
     ArrayList<GseEdge> inputGraphEdgeList = new ArrayList<>();
     GseGraph inputGraph = new GseGraph();
+    static Set<Integer> inputVertexId = new HashSet<>();
 
     // Gse graph edge const value
     public static final int GSE_GRAPH_EDGE_SRC = 0;
@@ -75,6 +78,10 @@ public class GseSimInput {
         }
     }
 
+    public static int simGetVertexNum() {
+        return inputVertexId.size();
+    }
+
     /* ****************************** Read File Procedure ****************************** */
     private void simInputReadGraph() {
         String line = null;
@@ -97,6 +104,12 @@ public class GseSimInput {
         inputGraph.setDirection(inputGraphDirection);
         for (GseEdge edge : inputGraphEdgeList) {
             inputGraph.insertEdge(edge);
+            if (!inputVertexId.contains(edge.getSrc())) {
+                inputVertexId.add(edge.getSrc());
+            }
+            if (!inputVertexId.contains(edge.getDst())) {
+                inputVertexId.add(edge.getDst());
+            }
         }
     }
 }

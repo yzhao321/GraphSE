@@ -131,6 +131,7 @@ public class GseScribeNode implements Application, ScribeMultiClient {
     /* **************************** Graph Interface ***************************** */
     public void storeGraph(GseGraph graph) {
         appLocalGraph = graph;
+        // Record the vertex that connected with other nodes for reducing local graph when sending
         appRemoteList = appLocalGraph.reduceRemoteList();
     }
 
@@ -146,15 +147,17 @@ public class GseScribeNode implements Application, ScribeMultiClient {
     private void processSignal(int contentSignal, GseScribeContent content) {
         switch (contentSignal) {
             case GseSignal.GSE_SIGNAL_LOCAL_HALT:
+                // Two flag for determining to halt
                 if (appLocalHalt && appRemoteHalt) {
-                    // appLocalEndpoint.route(null, new GseMsg(GseMsg.GSE_MSG_HALT, appLocalEndpoint.getLocalNodeHandle()), content.getSrc());
                     break;
                 }
                 appLocalHalt = true;
 
             case GseSignal.GSE_SIGNAL_LOCAL_PUB:
                 appLocalHalt = false;
+                // Only send the vertex connected with other node
                 GseGraph sendRomoteGraph = appLocalGraph.reduce(appRemoteList);
+                // Publish by setting local graph as remote graph of other node
                 GseScribeContentRemote publishContent = new GseScribeContentRemote(
                     appLocalEndpoint.getLocalNodeHandle(), sendRomoteGraph, content.getTopic(), appLocalTopicOperator.get(content.getTopic())
                 );

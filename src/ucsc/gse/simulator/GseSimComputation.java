@@ -27,20 +27,22 @@ public class GseSimComputation {
     // Computation topic
     public static final String GSE_COMP_TOPIC_CC = "CC";
     public static final String GSE_COMP_TOPIC_PR = "PR";
-    public static final String GSE_COMP_TOPIC_DJ = "DJ";
+    public static final String GSE_COMP_TOPIC_SP = "SP";
     // Computation steps
-    public static final int GSE_COMP_CC_STEPS = 25;
-    public static final int GSE_COMP_PR_STEPS = 10;
-    public static final int GSE_COMP_DJ_STEPS = 25;
+    public static final int GSE_COMP_CC_STEPS = 5;
+    public static final int GSE_COMP_PR_STEPS = 5;
+    public static final int GSE_COMP_SP_STEPS = 5;
 
     public GseSimComputation() {
         // Computation operator type
         simCompMapOps.put(GSE_COMP_TOPIC_CC, new GseOperatorCc());
         simCompMapOps.put(GSE_COMP_TOPIC_PR, new GseOperatorPr());
+        simCompMapOps.put(GSE_COMP_TOPIC_SP, new GseOperatorSp());
 
         // Computation superstep
         simCompMapStep.put(GSE_COMP_TOPIC_CC, GSE_COMP_CC_STEPS);
         simCompMapStep.put(GSE_COMP_TOPIC_PR, GSE_COMP_PR_STEPS);
+        simCompMapStep.put(GSE_COMP_TOPIC_SP, GSE_COMP_SP_STEPS);
     }
 
     /* ****************************** Interface for setting ********************** */

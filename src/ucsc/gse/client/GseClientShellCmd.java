@@ -58,7 +58,7 @@ public class GseClientShellCmd {
         cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("?",          "show cmd list"));
         cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("net",        "set network by: net [nodeNum] [option: auto-address]"));
         cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("input",      "set input by: input [fileName] [direction](0/1)"));
-        cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("comp",       "add computation by: comp [treeName](CC/PR)"));
+        cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("comp",       "add computation by: comp [treeName](CC/PR/SP)"));
         cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("deploy",     "start simulator"));
         cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("print",      "print scribe tree by: print [treeName]"));
         cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("step",       "trigger superstep step by step by: step [treeName]"));

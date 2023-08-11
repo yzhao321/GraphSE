@@ -27,4 +27,7 @@ public interface GseOperator extends Serializable {
 
     // Adjust in some scenarios
     public void fix(GseGraph localGraph, Topic topic);
+
+    // Evaluation for showing results
+    public int evaluate(GseVertex target, Topic topic);
 }

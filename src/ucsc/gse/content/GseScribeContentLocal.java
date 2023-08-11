@@ -32,7 +32,7 @@ public class GseScribeContentLocal implements GseScribeContent {
         int contentSignal;
         do {
             contentSignal  = GseSignal.GSE_SIGNAL_LOCAL_HALT;
-            if (localGraph.updateVertexPropertyInLocal(operator, topic)) {
+            if (localGraph.updateVertexValueInLocal(operator, topic)) {
                 contentSignal = GseSignal.GSE_SIGNAL_LOCAL_PUB;
             }
         } while (operator.aggregate() && (contentSignal == GseSignal.GSE_SIGNAL_LOCAL_PUB));

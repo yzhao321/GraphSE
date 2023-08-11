@@ -25,11 +25,11 @@ public class GseGraph implements Serializable {
 
     /* **************************** Graph set interface ***************************** */
     /* ******** Set Weight ******** */
-    // Propaget property local
-    public boolean updateVertexPropertyInLocal(GseOperator operator, Topic topic) {
+    // Propaget value local
+    public boolean updateVertexValueInLocal(GseOperator operator, Topic topic) {
         boolean changedFlag = false;
         for (GseVertex vertex : vertexMap.values()) {
-            for (GseEdge edge : vertex.adjList) {
+            for (GseEdge edge : vertex.adjList.values()) {
                 if (!vertexMap.containsKey(edge.dst)) {
                     continue;
                 }
@@ -41,11 +41,11 @@ public class GseGraph implements Serializable {
         return changedFlag;
     }
 
-    // Propagete property from remote graph to current graph
-    public boolean updateVertexPropertyFromRemote(GseOperator operator, GseGraph remoteGraph, Topic topic) {
+    // Propagete value from remote graph to current graph
+    public boolean updateVertexValueFromRemote(GseOperator operator, GseGraph remoteGraph, Topic topic) {
         boolean changedFlag = false;
         for (GseVertex remoteVertex : remoteGraph.vertexMap.values()) {
-            for (GseEdge remoteEdge : remoteVertex.adjList) {
+            for (GseEdge remoteEdge : remoteVertex.adjList.values()) {
                 if (!vertexMap.containsKey(remoteEdge.dst)) {
                     continue;
                 }
@@ -74,7 +74,7 @@ public class GseGraph implements Serializable {
         if (!vertexMap.containsKey(edge.src)) {
             vertexMap.put(edge.src, new GseVertex(edge.src));
         }
-        vertexMap.get(edge.src).adjList.add(edge);
+        vertexMap.get(edge.src).addEdge(edge);
 
         if (!vertexMap.containsKey(edge.dst)) {
             vertexMap.put(edge.dst, new GseVertex(edge.dst));
@@ -87,7 +87,7 @@ public class GseGraph implements Serializable {
         if (direction) {
             return;
         }
-        vertexMap.get(edge.dst).adjList.add(new GseEdge(edge.dst, edge.src));
+        vertexMap.get(edge.dst).addEdge(new GseEdge(edge.dst, edge.src));
 
         vertexMap.get(edge.src).inDegree++;
         vertexMap.get(edge.dst).outDegree++;
@@ -105,7 +105,7 @@ public class GseGraph implements Serializable {
     public List<Integer> reduceRemoteList() {
         List<Integer> remoteList = new ArrayList<>();
         for (int vertexId : vertexMap.keySet()) {
-            for (GseEdge edge : vertexMap.get(vertexId).adjList) {
+            for (GseEdge edge : vertexMap.get(vertexId).adjList.values()) {
                 if (!vertexMap.containsKey(edge.dst)) {
                     remoteList.add(vertexId);
                     break;
@@ -137,14 +137,14 @@ public class GseGraph implements Serializable {
         return vertexMap.values();
     }
 
-    public int getProperty(int id) {
+    public Object getProperty(int id) {
         return vertexMap.get(id).property;
     }
 
     public void print(String head) {
         for (GseVertex vertex : vertexMap.values()) {
             System.out.println(head + vertex);
-            for (GseEdge edge : vertex.adjList) {
+            for (GseEdge edge : vertex.adjList.values()) {
                 System.out.println(head + "   " + edge);
             }
         }

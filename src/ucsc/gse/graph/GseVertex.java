@@ -10,7 +10,6 @@
 package ucsc.gse.graph;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -18,25 +17,21 @@ import rice.p2p.scribe.Topic;
 
 public class GseVertex implements Serializable {
     int id;
-    int property;
+    Object property;
 
     int inDegree = 0;
     int outDegree = 0;
 
-    ArrayList<GseEdge> adjList = new ArrayList<>();
-    Map<Topic, Integer> topicMap = new HashMap<>();
+    Map<Integer, GseEdge> adjList = new HashMap<>();
+    Map<Topic, Object> topicMap = new HashMap<>();
 
     public GseVertex(int id) {
-        this(id, 0);
+        this(id, null);
     }
 
-    public GseVertex(int id, int property) {
+    public GseVertex(int id, Object property) {
         this.id = id;
         this.property = property;
-    }
-
-    public void addEdge(GseEdge edge) {
-        adjList.add(edge);
     }
 
     public int getId() {
@@ -51,17 +46,25 @@ public class GseVertex implements Serializable {
         return outDegree;
     }
 
-    public void setTopicVal(Topic topic, int val) {
+    public void addEdge(GseEdge edge) {
+        adjList.put(edge.dst, edge);
+    }
+
+    public GseEdge getEdge(int id) {
+        return adjList.get(id);
+    }
+
+    public void setTopicVal(Topic topic, Object val) {
         topicMap.put(topic, val);
     }
 
-    public int getTopicVal(Topic topic) {
+    public Object getTopicVal(Topic topic) {
         return topicMap.get(topic);
     }
 
     public String toString() {
         String val = "";
-        for (Map.Entry<Topic, Integer> topicVal : topicMap.entrySet()) {
+        for (Map.Entry<Topic, Object> topicVal : topicMap.entrySet()) {
             val += topicVal.toString() + " ";
         }
         return "V{" + id + " : " + val + "}";

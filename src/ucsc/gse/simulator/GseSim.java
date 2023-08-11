@@ -81,10 +81,18 @@ public class GseSim extends Thread {
     }
 
     public void simPrintTree(String treeStr) {
+        if (!simTopicTreeMap.containsKey(treeStr)) {
+            System.out.println("Error topic. ");
+            return;
+        }
         simTopicTreeMap.get(treeStr).printTree();
     }
 
     public void simTriggerSuperstep(String treeStr) {
+        if (!simTopicTreeMap.containsKey(treeStr)) {
+            System.out.println("Error topic. ");
+            return;
+        }
         simTopicTreeMap.get(treeStr).publishUpdate();
     }
 
@@ -95,11 +103,19 @@ public class GseSim extends Thread {
     }
 
     public void simResultGroup(String treeStr) {
+        if (!simTopicTreeMap.containsKey(treeStr)) {
+            System.out.println("Error topic. ");
+            return;
+        }
         simTopicTreeMap.get(treeStr).printGroupNum();
     }
 
     public void simResultMax(String treeStr) {
-        simTopicTreeMap.get(treeStr).printGroupMax();
+        if (!simTopicTreeMap.containsKey(treeStr)) {
+            System.out.println("Error topic. ");
+            return;
+        }
+        simTopicTreeMap.get(treeStr).printMax();
     }
 
     /* ****************************** Start Procedure ****************************** */

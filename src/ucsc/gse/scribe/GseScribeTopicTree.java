@@ -34,7 +34,7 @@ public class GseScribeTopicTree extends Thread {
 
     // Scribe tree waiting heuristic const value
     public static final int GSE_TREE_BUILD_WAIT_TIME = 1000;
-    public static final int GSE_TREE_STEP_WAIT_TIME = 500;
+    public static final int GSE_TREE_STEP_WAIT_TIME = 2000;
 
     public GseScribeTopicTree(Topic topic, GseScribeComputation computation) {
         treeTopic = topic;
@@ -47,8 +47,9 @@ public class GseScribeTopicTree extends Thread {
     }
 
     public void startComputation() {
-        System.out.println("\n\n");
+        System.out.println("\n");
         for (int i = 0; i < treeComputation.compSteps; i++) {
+            System.out.println("------------------------------------------");
             System.out.println("\t " + treeTopic + " step " + i);
             publishUpdate();
             try {
@@ -56,10 +57,9 @@ public class GseScribeTopicTree extends Thread {
             } catch (InterruptedException e) {
                 System.out.println("Gse sim wait error: " + e);
             }
-            System.out.println("------------------------------------------");
         }
-        System.out.println("\t " + treeTopic + " iteration End");
-        System.out.println("------------------------------------------\n");
+        System.out.println("------------------------------------------");
+        System.out.println("\t " + treeTopic + " iteration End\n");
     }
 
     @Override
@@ -122,7 +122,7 @@ public class GseScribeTopicTree extends Thread {
                 continue;
             }
             for (GseVertex vertex : node.appLocalGraph.getVertexList()) {
-                groupIdSet.add(vertex.getTopicVal(treeTopic));
+                groupIdSet.add(treeComputation.compOperator.evaluate(vertex, treeTopic));
             }
         }
         System.out.println("------------------------------------------");
@@ -130,7 +130,7 @@ public class GseScribeTopicTree extends Thread {
         System.out.println("------------------------------------------\n");
     }
 
-    public void printGroupMax() {
+    public void printMax() {
         int maxNum = 0;
         GseVertex maxVertex = null;
         for (GseScribeNode node : treeNodeMap.values()) {
@@ -138,7 +138,7 @@ public class GseScribeTopicTree extends Thread {
                 continue;
             }
             for (GseVertex vertex : node.appLocalGraph.getVertexList()) {
-                int val = vertex.getTopicVal(treeTopic);
+                int val = treeComputation.compOperator.evaluate(vertex, treeTopic);
                 if (maxNum < val) {
                     maxNum = val;
                     maxVertex = vertex;

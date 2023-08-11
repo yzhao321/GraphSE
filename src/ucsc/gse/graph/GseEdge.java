@@ -17,13 +17,25 @@ public class GseEdge implements Serializable {
     int weight;
 
     public GseEdge(int src, int dst) {
-        this(src, dst, 0);
+        this(src, dst, 1);
     }
 
     public GseEdge(int src, int dst, int weight) {
         this.src = src;
         this.dst = dst;
         this.weight = weight;
+    }
+
+    public int getSrc() {
+        return src;
+    }
+
+    public int getDst() {
+        return dst;
+    }
+
+    public int getWeight() {
+        return weight;
     }
 
     public String toString() {

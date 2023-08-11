@@ -21,14 +21,13 @@ public class GseOperatorCc implements GseOperator {
 
     @Override
     public boolean compute(GseVertex target, GseVertex ref, Topic topic) {
-        boolean changedFlag = false;
-
-        if (target.getTopicVal(topic) < ref.getTopicVal(topic)) {
-            System.out.println("Update: " + target.getTopicVal(topic) + " --> " + ref.getTopicVal(topic));
-            target.setTopicVal(topic, ref.getTopicVal(topic));
-            changedFlag = true;
+        if ((int) target.getTopicVal(topic) >= (int) ref.getTopicVal(topic)) {
+            return false;
         }
-        return changedFlag;
+
+        // System.out.println("Update: " + target.getTopicVal(topic) + " --> " + ref.getTopicVal(topic));
+        target.setTopicVal(topic, ref.getTopicVal(topic));
+        return true;
     }
 
     @Override
@@ -39,5 +38,11 @@ public class GseOperatorCc implements GseOperator {
     @Override
     public void fix(GseGraph localGraph, Topic topic) {
         return;
+    }
+
+    @Override
+    public int evaluate(GseVertex target, Topic topic) {
+        int val = (int) target.getTopicVal(topic);
+        return val;
     }
 }
