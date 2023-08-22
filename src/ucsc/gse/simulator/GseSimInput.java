@@ -34,7 +34,7 @@ public class GseSimInput {
     public static final int GSE_GRAPH_EDGE_DST = 1;
 
     // Gse default test input file
-    public static final String GSE_SIM_INPUT_FILE_PATH = "./input/facebook_combined.txt";
+    public static final String GSE_SIM_INPUT_FILE_PATH = "./input/p2p-Gnutella08.txt";
 
     /* ****************************** Interface for setting or running input reader ****************************** */
     public void simInputReadFile() {
