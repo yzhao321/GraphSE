@@ -39,9 +39,11 @@ public class GseClientShellCmd {
     ArrayList<Map.Entry<String, String>> cmdDescription = new ArrayList<>(); // Map cmd name to description
 
     // Simulating experimental setup, input, and computation
-    GseSim clientSimulator = new GseSim();
+    GseSim clientSimulator = null;
 
-    public GseClientShellCmd() {
+    public GseClientShellCmd(GseSim clientSimulator) {
+        this.clientSimulator = clientSimulator;
+
         // Map cmd name to function
         cmdList.put("?",                (args) -> cmdHelp(args));
         cmdList.put("net",              (args) -> cmdSetSimNetwork(args));
@@ -56,7 +58,7 @@ public class GseClientShellCmd {
 
         // Map cmd name to description
         cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("?",          "show cmd list"));
-        cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("net",        "set network by: net [nodeNum] [option: auto-address]"));
+        cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("net",        "set network by: net [nodeNum] [option: ip address](auto/addr)"));
         cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("input",      "set input by: input [fileName] [direction](0/1)"));
         cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("comp",       "add computation by: comp [treeName](CC/PR/SP)"));
         cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("deploy",     "start simulator"));
@@ -87,6 +89,7 @@ public class GseClientShellCmd {
     // Config network
     static final int GSE_CMD_NETWORK_ARG_NUM = 2;
     static final int GSE_CMD_NETWORK_ARG_NODE_NUM = 1;
+    static final int GSE_CMD_NETWORK_ARG_ADDR = 2;
     public Boolean cmdSetSimNetwork(List<String> args) {
         if (args.size() < GSE_CMD_NETWORK_ARG_NUM) {
             System.out.println("Error args.\n");
@@ -95,7 +98,11 @@ public class GseClientShellCmd {
 
         clientSimulator.simSetNetwork(Integer.parseInt(args.get(GSE_CMD_NETWORK_ARG_NODE_NUM)));
         if (args.size() > GSE_CMD_NETWORK_ARG_NUM) {
-            clientSimulator.simSetNetworkAddress();
+            if (args.get(GSE_CMD_NETWORK_ARG_ADDR) == "auto") {
+                clientSimulator.simSetNetworkAddressAuto();
+            } else {
+                clientSimulator.simSetNetworkAddress(args.get(GSE_CMD_NETWORK_ARG_ADDR));
+            }
         }
         return true;
     }

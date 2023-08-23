@@ -16,14 +16,16 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Function;
 
+import ucsc.gse.simulator.GseSim;
+
 public class GseClientShell {
     Map<String, Function<List<String>, Boolean>> cmdList;
     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
     String inputLine = null;
     public static final int GSE_CLIENT_SHELL_CMD_NAME = 0;
 
-    public GseClientShell() {
-        GseClientShellCmd clientShellCmd = new GseClientShellCmd();
+    public GseClientShell(GseSim clientSimulator) {
+        GseClientShellCmd clientShellCmd = new GseClientShellCmd(clientSimulator);
         cmdList = clientShellCmd.getCmdList();
     }
 

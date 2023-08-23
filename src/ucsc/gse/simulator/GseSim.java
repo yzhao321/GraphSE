@@ -52,14 +52,18 @@ public class GseSim extends Thread {
 
     @Override
     public void run() {
-        // Construct scribe topic tree
+        // Init pastry environment
         simBuildEnvironment();
         simCreateNode();
+
+        // Construct topic tree
         simBuildTree();
 
         // Divide data into workers
         simReadInput();
         simDivideInput();
+
+        // Init vertex value for each computation
         simInitComputation();
     }
 
@@ -68,12 +72,16 @@ public class GseSim extends Thread {
         simNet.simNetSetNodeNum(nodeNum);
     }
 
-    public void simSetNetworkAddress() {
-        simNet.simNetSetIpAddress();
+    public void simSetNetworkAddress(String address) {
+        simNet.simNetSetIpAddress(address);
+    }
+
+    public void simSetNetworkAddressAuto() {
+        simNet.simNetSetIpAddressAuto();
     }
 
     public void simSetInput(String filePath, boolean direction) {
-        simInput.simInputSetInput(filePath, direction);;
+        simInput.simInputSetInput(filePath, direction);
     }
 
     public void simAddComputation(String str) {

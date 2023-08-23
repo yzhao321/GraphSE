@@ -30,7 +30,7 @@ public class GseSimNetwork {
         try {
             simNetIpAddress = InetAddress.getByName(GSE_SIM_NETWORK_IP_ADDR);
         } catch (Exception e) {
-            System.out.println("Gse sim network error: " + e);
+            System.out.println("Gse sim network address error: " + e);
         }
     }
 
@@ -39,7 +39,15 @@ public class GseSimNetwork {
         simNetNodeNum = nodeNum;
     }
 
-    public void simNetSetIpAddress() {
+    public void simNetSetIpAddress(String address) {
+        try {
+            simNetIpAddress = InetAddress.getByName(address);
+        } catch (Exception e) {
+            System.out.println("Gse sim set network address error: " + e);
+        }
+    }
+
+    public void simNetSetIpAddressAuto() {
         try {
             simNetIpAddress = InetAddress.getLocalHost();
         } catch (Exception e) {
