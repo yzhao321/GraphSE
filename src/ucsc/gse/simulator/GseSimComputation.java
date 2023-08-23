@@ -10,16 +10,16 @@
 package ucsc.gse.simulator;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import ucsc.gse.operator.*;
 
 public class GseSimComputation {
     // Computation map from name to operator
-    Map<String, GseOperator> simCompMapOps = new HashMap<>();
-    Map<String, Integer> simCompMapStep = new HashMap<>();
+    Map<String, GseOperator> simCompMapOps = new ConcurrentHashMap<>();
+    Map<String, Integer> simCompMapStep = new ConcurrentHashMap<>();
     // Computation list for simulator
     List<String> simCompStrList = new ArrayList<>();
 

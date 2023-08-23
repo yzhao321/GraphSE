@@ -11,7 +11,7 @@ package ucsc.gse.graph;
 
 import java.io.Serializable;
 import java.util.Map;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import rice.p2p.scribe.Topic;
 
@@ -22,8 +22,8 @@ public class GseVertex implements Serializable {
     int inDegree = 0;
     int outDegree = 0;
 
-    Map<Integer, GseEdge> adjList = new HashMap<>();
-    Map<Topic, Object> topicMap = new HashMap<>();
+    Map<Integer, GseEdge> adjList = new ConcurrentHashMap<>();
+    Map<Topic, Object> topicMap = new ConcurrentHashMap<>();
 
     public GseVertex(int id) {
         this(id, null);

@@ -10,6 +10,7 @@
 package ucsc.gse.scribe;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import rice.p2p.commonapi.*;
 import rice.p2p.scribe.Scribe;
@@ -34,11 +35,11 @@ public class GseScribeNode implements Application, ScribeMultiClient {
     // Worker computation
     GseGraph appLocalGraph = null;
     List<Integer> appRemoteList = null;
-    HashMap<Topic, GseOperator> appLocalTopicOperator = new HashMap<>();
+    ConcurrentHashMap<Topic, GseOperator> appLocalTopicOperator = new ConcurrentHashMap<>();
     boolean appLocalHalt = false;
     boolean appRemoteHalt = false;
     // Master management
-    HashMap<NodeHandle, Boolean> appHaltMap = null;
+    ConcurrentHashMap<NodeHandle, Boolean> appHaltMap = null;
 
     /* **************************** Const value ********************************* */
     public static final String GSE_ENDPOINT_NAME = "GseEndpointInstance";

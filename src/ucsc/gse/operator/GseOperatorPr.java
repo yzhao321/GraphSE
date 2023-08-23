@@ -9,8 +9,8 @@
 
 package ucsc.gse.operator;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import rice.p2p.scribe.Topic;
 import ucsc.gse.graph.GseGraph;
@@ -23,7 +23,7 @@ public class GseOperatorPr implements GseOperator {
 
     @Override
     public void init(GseVertex target, Topic topic) {
-        Map<Integer, Integer> targetMap = new HashMap<>();
+        Map<Integer, Integer> targetMap = new ConcurrentHashMap<>();
         targetMap.put(target.getId(), GSE_OPERATOR_PR_INIT_VAL);
         target.setTopicVal(topic, targetMap);
     }
@@ -49,7 +49,7 @@ public class GseOperatorPr implements GseOperator {
             + (1 - GSE_OPERATOR_PR_RANDOM_PARA) * sum);
 
         // Update value
-        targetMap = new HashMap<>();
+        targetMap = new ConcurrentHashMap<>();
         targetMap.put(target.getId(), targetValue);
         target.setTopicVal(topic, targetMap);
         return true;
@@ -66,7 +66,7 @@ public class GseOperatorPr implements GseOperator {
         for (GseVertex target : localGraph.getVertexList()) {
             if (target.getInDegree() == 0) {
                 int targetValue = (int) (GSE_OPERATOR_PR_RANDOM_PARA * GSE_OPERATOR_PR_INIT_VAL / GseSimInput.simGetVertexNum());
-                Map<Integer, Integer> targetMap = new HashMap<>();
+                Map<Integer, Integer> targetMap = new ConcurrentHashMap<>();
                 targetMap.put(target.getId(), targetValue);
                 target.setTopicVal(topic, targetMap);
             }

@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import rice.environment.Environment;
 import rice.environment.time.simple.SimpleTimeSource;
@@ -39,7 +40,7 @@ public class GseSim extends Thread {
     ArrayList<GseScribeNode> simScribeWorkerNodes = new ArrayList<GseScribeNode>();
 
     // Gse scribe topic tree map
-    Map<String, GseScribeTopicTree> simTopicTreeMap = new HashMap<>();
+    Map<String, GseScribeTopicTree> simTopicTreeMap = new ConcurrentHashMap<>();
 
     // Gse config
     GseSimNetwork simNet = new GseSimNetwork();

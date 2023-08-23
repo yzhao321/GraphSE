@@ -10,7 +10,7 @@
 package ucsc.gse.operator;
 
 import java.util.Map;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import rice.p2p.scribe.Topic;
 import ucsc.gse.graph.GseGraph;
@@ -19,7 +19,7 @@ import ucsc.gse.graph.GseVertex;
 public class GseOperatorSp implements GseOperator {
     @Override
     public void init(GseVertex target, Topic topic) {
-        Map<Integer, Integer> targetMap = new HashMap<>();
+        Map<Integer, Integer> targetMap = new ConcurrentHashMap<>();
         targetMap.put(target.getId(), 0);
         target.setTopicVal(topic, targetMap);
     }

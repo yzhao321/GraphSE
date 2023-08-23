@@ -11,10 +11,10 @@ package ucsc.gse.scribe;
 
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collection;
+import java.util.concurrent.ConcurrentHashMap;
 
 import rice.environment.time.simple.SimpleTimeSource;
 import rice.p2p.commonapi.NodeHandle;
@@ -29,7 +29,7 @@ public class GseScribeTopicTree extends Thread {
     GseScribeComputation treeComputation;
 
     // Tree management
-    Map<NodeHandle, GseScribeNode> treeNodeMap = new HashMap<>(); // Nodes in this topic
+    Map<NodeHandle, GseScribeNode> treeNodeMap = new ConcurrentHashMap<>(); // Nodes in this topic
     NodeHandle treeRoot = null; // Tree root of this topic
 
     // Scribe tree waiting heuristic const value

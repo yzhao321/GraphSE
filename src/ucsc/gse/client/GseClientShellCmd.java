@@ -13,9 +13,9 @@ package ucsc.gse.client;
 import java.util.Map;
 import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
+import java.util.concurrent.ConcurrentHashMap;
 
 import ucsc.gse.simulator.GseSim;
 
@@ -35,7 +35,7 @@ import ucsc.gse.simulator.GseSim;
 
 public class GseClientShellCmd {
     // Shell testing cmd management
-    Map<String, Function<List<String>, Boolean>> cmdList = new HashMap<>(); // Map cmd name to function
+    Map<String, Function<List<String>, Boolean>> cmdList = new ConcurrentHashMap<>(); // Map cmd name to function
     ArrayList<Map.Entry<String, String>> cmdDescription = new ArrayList<>(); // Map cmd name to description
 
     // Simulating experimental setup, input, and computation

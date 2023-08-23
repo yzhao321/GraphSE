@@ -13,14 +13,14 @@ import java.util.List;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map;
 
 import rice.p2p.scribe.Topic;
 import ucsc.gse.operator.GseOperator;
 
 public class GseGraph implements Serializable {
-    Map<Integer, GseVertex> vertexMap = new HashMap<>();
+    Map<Integer, GseVertex> vertexMap = new ConcurrentHashMap<>();
     boolean direction = false;
 
     /* **************************** Graph set interface ***************************** */
