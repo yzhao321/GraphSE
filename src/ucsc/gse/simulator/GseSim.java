@@ -77,10 +77,6 @@ public class GseSim extends Thread {
         simNet.simNetSetIpAddress(address);
     }
 
-    public void simSetNetworkAddressAuto() {
-        simNet.simNetSetIpAddressAuto();
-    }
-
     public void simSetInput(String filePath, boolean direction) {
         simInput.simInputSetInput(filePath, direction);
     }
@@ -199,7 +195,7 @@ public class GseSim extends Thread {
     }
 
     private void simDivideInput() {
-        simInput.simInputDivideInput(simScribeWorkerNodes);
+        simInput.simInputDivideInput(simScribeNodes);
     }
 
     private void simInitComputation() {

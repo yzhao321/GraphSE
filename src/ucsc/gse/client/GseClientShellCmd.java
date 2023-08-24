@@ -58,7 +58,7 @@ public class GseClientShellCmd {
 
         // Map cmd name to description
         cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("?",          "show cmd list"));
-        cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("net",        "set network by: net [nodeNum] [option: ip address](auto/addr)"));
+        cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("net",        "set network by: net [nodeNum] [option: ip addr]"));
         cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("input",      "set input by: input [fileName] [direction](0/1)"));
         cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("comp",       "add computation by: comp [treeName](CC/PR/SP)"));
         cmdDescription.add(new AbstractMap.SimpleEntry<String,String>("deploy",     "start simulator"));
@@ -98,11 +98,7 @@ public class GseClientShellCmd {
 
         clientSimulator.simSetNetwork(Integer.parseInt(args.get(GSE_CMD_NETWORK_ARG_NODE_NUM)));
         if (args.size() > GSE_CMD_NETWORK_ARG_NUM) {
-            if (args.get(GSE_CMD_NETWORK_ARG_ADDR) == "auto") {
-                clientSimulator.simSetNetworkAddressAuto();
-            } else {
-                clientSimulator.simSetNetworkAddress(args.get(GSE_CMD_NETWORK_ARG_ADDR));
-            }
+            clientSimulator.simSetNetworkAddress(args.get(GSE_CMD_NETWORK_ARG_ADDR));
         }
         return true;
     }

@@ -12,23 +12,23 @@ package ucsc.gse.simulator;
 import java.net.InetAddress;
 
 public class GseSimNetwork {
+    // Network config (Use a same [address, bootport] join a same Pastry group)
     InetAddress simNetIpAddress = null;
-    int simNetBindPort = GSE_SIM_NETWORK_BIND_PORT;
     int simNetBootPort = GSE_SIM_NETWORK_BOOT_PORT;
-
+    int simNetBindPort = GSE_SIM_NETWORK_BIND_PORT;
+    // Variation in heterogeneous environments
     int simNetNodeNum = GSE_SIM_NETWORK_NODE_NUM;
 
     /* ****************************** Default value ****************************** */
     // Pastry node
-    public static final int GSE_SIM_NETWORK_NODE_NUM = 10;
-    // Network address and ports
-    public static final String GSE_SIM_NETWORK_IP_ADDR = "10.0.0.187";
-    public static final int GSE_SIM_NETWORK_BIND_PORT = 9050;
-    public static final int GSE_SIM_NETWORK_BOOT_PORT = 9050;
+    public static final int GSE_SIM_NETWORK_NODE_NUM = 1;
+    // Network ports
+    public static final int GSE_SIM_NETWORK_BIND_PORT = 10000;
+    public static final int GSE_SIM_NETWORK_BOOT_PORT = 10000;
 
     public GseSimNetwork() {
         try {
-            simNetIpAddress = InetAddress.getByName(GSE_SIM_NETWORK_IP_ADDR);
+            simNetIpAddress = InetAddress.getLocalHost();
         } catch (Exception e) {
             System.out.println("Gse sim network address error: " + e);
         }
@@ -44,14 +44,6 @@ public class GseSimNetwork {
             simNetIpAddress = InetAddress.getByName(address);
         } catch (Exception e) {
             System.out.println("Gse sim set network address error: " + e);
-        }
-    }
-
-    public void simNetSetIpAddressAuto() {
-        try {
-            simNetIpAddress = InetAddress.getLocalHost();
-        } catch (Exception e) {
-            System.out.println("Gse sim network error: " + e);
         }
     }
 
