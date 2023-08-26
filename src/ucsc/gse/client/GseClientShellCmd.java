@@ -133,7 +133,7 @@ public class GseClientShellCmd {
 
     // Start simulator
     public Boolean cmdDeploy(List<String> args) {
-        clientSimulator.start();
+        clientSimulator.runSim();
         return true;
     }
 

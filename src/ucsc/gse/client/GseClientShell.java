@@ -29,7 +29,7 @@ public class GseClientShell {
         cmdList = clientShellCmd.getCmdList();
     }
 
-    public void start() {
+    public void runShell() {
         while (true) {
             readCmd();
             implCmd();

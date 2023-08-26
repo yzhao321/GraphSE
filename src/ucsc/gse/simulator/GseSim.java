@@ -28,7 +28,7 @@ import rice.pastry.standard.RandomNodeIdFactory;
 
 import ucsc.gse.scribe.*;
 
-public class GseSim extends Thread {
+public class GseSim {
     // Gse pastry environment
     Environment env;
     NodeIdFactory nidFactory;
@@ -51,8 +51,7 @@ public class GseSim extends Thread {
     public static final int GSE_SIM_NETWORK_SET_WAIT_TIME = 100;
     public static final int GSE_SIM_NODE_JOIN_WAIT_TIME = 100;
 
-    @Override
-    public void run() {
+    public void runSim() {
         // Init pastry environment
         simBuildEnvironment();
         simCreateNode();
