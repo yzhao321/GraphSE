@@ -11,23 +11,26 @@ package ucsc.gse.simulator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Set;
+import java.util.HashSet;
 
 import ucsc.gse.graph.*;
 import ucsc.gse.scribe.GseScribeNode;
 
 public class GseSimInput {
-    // Gse input file setting
+    // Gse input config
     String inputFilePath = GSE_SIM_INPUT_FILE_PATH;
     boolean inputGraphDirection = false;
 
-    // Gse input storage
-    ArrayList<GseEdge> inputGraphEdgeList = new ArrayList<>();
+    // Gse input file
+    List<GseEdge> inputGraphEdgeList = new ArrayList<>();
     GseGraph inputGraph = new GseGraph();
+
+    // Gse distributed storage
     static Set<Integer> inputVertexId = new HashSet<>();
+    List<GseGraph> inputSubGraphList = new ArrayList<>();
 
     // Gse graph edge const value
     public static final int GSE_GRAPH_EDGE_SRC = 0;
@@ -36,12 +39,38 @@ public class GseSimInput {
     // Gse default test input file
     public static final String GSE_SIM_INPUT_FILE_PATH = "./input/p2p-Gnutella08.txt";
 
-    /* ****************************** Interface for setting or running input reader ****************************** */
+    /* ****************************** Interface for running input reader ****************************** */
+    // Initialization
     public void simInputReadFile() {
         simInputReadGraph();
         simInputProduceGraph();
     }
 
+    // Divide input and store into sub graph set
+    public void simInputDivideInput(int externNum) {
+        List<Integer> graphVertexList = inputGraph.getVertexIdList();
+        int capacityNum = inputGraph.getVertexNum();
+        int singleNum = capacityNum / externNum;
+
+        for (int i = 0; i < externNum; i++) {
+            GseGraph subGraph;
+            if (i == externNum - 1) {
+                subGraph = inputGraph.divide(graphVertexList.subList(i * singleNum, capacityNum));
+            } else {
+                subGraph = inputGraph.divide(graphVertexList.subList(i * singleNum, (i + 1) * singleNum));
+            }
+            inputSubGraphList.add(subGraph);
+        }
+    }
+
+    // Send sub graph from the set to other node
+    public void simInputSendInput(List<GseScribeNode> workerList) {
+        for (int i = 0; i < workerList.size(); i++) {
+            workerList.get(i).storeGraph(inputSubGraphList.get(i));
+        }
+    }
+
+    /* ****************************** Interface for setting or printing input reader ****************************** */
     public void simInputSetInput(String filePath, boolean direction) {
         inputFilePath = filePath;
         inputGraphDirection = direction;
@@ -61,28 +90,12 @@ public class GseSimInput {
         System.out.println("---------------------\n");
     }
 
-    // Divide input to workers
-    public void simInputDivideInput(ArrayList<GseScribeNode> scribeNodes) {
-        List<Integer> graphVertexList = inputGraph.getVertexIdList();
-        int capacityNum = inputGraph.getVertexNum();
-        int singleNum = capacityNum / scribeNodes.size();
-
-        for (int i = 0; i < scribeNodes.size(); i++) {
-            GseGraph subGraph;
-            if (i == scribeNodes.size() - 1) {
-                subGraph = inputGraph.divide(graphVertexList.subList(i * singleNum, capacityNum));
-            } else {
-                subGraph = inputGraph.divide(graphVertexList.subList(i * singleNum, (i + 1) * singleNum));
-            }
-            scribeNodes.get(i).storeGraph(subGraph);
-        }
-    }
-
+    /* ****************************** For operator ****************************** */
     public static int simGetVertexNum() {
         return inputVertexId.size();
     }
 
-    /* ****************************** Read File Procedure ****************************** */
+    /* ****************************** Read file procedure ****************************** */
     private void simInputReadGraph() {
         String line = null;
 

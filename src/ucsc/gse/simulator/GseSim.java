@@ -37,8 +37,6 @@ public class GseSim {
 
     // Gse scribe node list
     ArrayList<GseScribeNode> simScribeNodes = new ArrayList<GseScribeNode>();
-    ArrayList<GseScribeNode> simScribeWorkerNodes = new ArrayList<GseScribeNode>();
-
     // Gse scribe topic tree map
     Map<String, GseScribeTopicTree> simTopicTreeMap = new ConcurrentHashMap<>();
 
@@ -46,6 +44,7 @@ public class GseSim {
     GseSimNetwork simNet = new GseSimNetwork();
     GseSimInput simInput = new GseSimInput();
     GseSimComputation simComputation = new GseSimComputation();
+    GseSimNode simNode = new GseSimNode();
 
     // Gse waiting heuristic const value
     public static final int GSE_SIM_NETWORK_SET_WAIT_TIME = 100;
@@ -62,14 +61,16 @@ public class GseSim {
         // Divide data into workers
         simReadInput();
         simDivideInput();
+        simSendInput();
 
         // Init vertex value for each computation
         simInitComputation();
     }
 
     /* ****************************** Interface for shell cmd ****************************** */
-    public void simSetNetwork(int nodeNum) {
-        simNet.simNetSetNodeNum(nodeNum);
+    public void simSetNodeNum(int local, int extern) {
+        simNode.simNodeSetLocalNum(local);
+        simNode.simNodeSetExternNum(extern);
     }
 
     public void simSetNetworkAddress(String address) {
@@ -142,7 +143,7 @@ public class GseSim {
     private void simCreateNode() {
         try {
             System.out.println("\n--------------Node Creating-----------------");
-            for (int i = 0; i < simNet.simNetGetNodeNum(); i++) {
+            for (int i = 0; i < simNode.simNodeGetLocalNum(); i++) {
                 PastryNode pastryNode = factory.newNode();
                 GseScribeNode scribeNode = new GseScribeNode(pastryNode);
                 simScribeNodes.add(scribeNode);
@@ -180,13 +181,6 @@ public class GseSim {
             topicTree.buildTree(simScribeNodes);
             simTopicTreeMap.put(compStr, topicTree);
         }
-
-        // Split the workers from masters
-        for (GseScribeNode scribeNode : simScribeNodes) {
-            if (!scribeNode.isRootOfTopics()) {
-                simScribeWorkerNodes.add(scribeNode);
-            }
-        }
     }
 
     private void simReadInput() {
@@ -194,7 +188,14 @@ public class GseSim {
     }
 
     private void simDivideInput() {
-        simInput.simInputDivideInput(simScribeNodes);
+        simInput.simInputDivideInput(simNode.simNodeGetExternNum());
+    }
+
+    private void simSendInput() {
+        for (GseScribeNode worker : simScribeNodes) {
+            simNode.simNodeAddWorkerList(worker);
+        }
+        simInput.simInputSendInput(simNode.simNodeGetWokerList());
     }
 
     private void simInitComputation() {

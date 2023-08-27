@@ -16,12 +16,8 @@ public class GseSimNetwork {
     InetAddress simNetIpAddress = null;
     int simNetBootPort = GSE_SIM_NETWORK_BOOT_PORT;
     int simNetBindPort = GSE_SIM_NETWORK_BIND_PORT;
-    // Variation in heterogeneous environments
-    int simNetNodeNum = GSE_SIM_NETWORK_NODE_NUM;
 
     /* ****************************** Default value ****************************** */
-    // Pastry node
-    public static final int GSE_SIM_NETWORK_NODE_NUM = 1;
     // Network ports
     public static final int GSE_SIM_NETWORK_BIND_PORT = 10000;
     public static final int GSE_SIM_NETWORK_BOOT_PORT = 10000;
@@ -35,20 +31,12 @@ public class GseSimNetwork {
     }
 
     /* ****************************** Interface for set/get ********************** */
-    public void simNetSetNodeNum(int nodeNum) {
-        simNetNodeNum = nodeNum;
-    }
-
     public void simNetSetIpAddress(String address) {
         try {
             simNetIpAddress = InetAddress.getByName(address);
         } catch (Exception e) {
             System.out.println("Gse sim set network address error: " + e);
         }
-    }
-
-    public int simNetGetNodeNum() {
-        return simNetNodeNum;
     }
 
     public InetAddress simNetGetIpAddress() {
