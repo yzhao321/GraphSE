@@ -11,34 +11,29 @@ package ucsc.gse.content;
 
 import rice.p2p.commonapi.NodeHandle;
 import rice.p2p.scribe.Topic;
-
-import ucsc.gse.operator.GseOperator;
 import ucsc.gse.graph.GseGraph;
+import ucsc.gse.operator.GseOperator;
 import ucsc.gse.publiclib.GseSignal;
 
-public class GseScribeContentLocal implements GseScribeContent {
+public class GseScribeContentComputationRemote implements GseScribeContent {
     NodeHandle srcHandle;
+    GseGraph remoteGraph;
     Topic topic;
     GseOperator operator;
 
-    public GseScribeContentLocal(NodeHandle srcHandle, Topic topic, GseOperator operator) {
+    public GseScribeContentComputationRemote(NodeHandle srcHandle, GseGraph remoteGraph, Topic topic, GseOperator operator) {
         this.srcHandle = srcHandle;
+        this.remoteGraph = remoteGraph;
         this.topic = topic;
         this.operator = operator;
     }
 
     @Override
     public int run(GseGraph localGraph) {
-        int contentSignal;
-        do {
-            contentSignal  = GseSignal.GSE_SIGNAL_LOCAL_HALT;
-            if (localGraph.updateVertexValueInLocal(operator, topic)) {
-                contentSignal = GseSignal.GSE_SIGNAL_LOCAL_PUB;
-            }
-        } while (operator.aggregate() && (contentSignal == GseSignal.GSE_SIGNAL_LOCAL_PUB));
-
-        operator.fix(localGraph, topic);
-
+        int contentSignal = GseSignal.GSE_SIGNAL_REMOTE_HALT;
+        if (localGraph.updateVertexValueFromRemote(operator, remoteGraph, topic)) {
+            contentSignal = GseSignal.GSE_SIGNAL_REMOTE_RECV;
+        }
         return contentSignal;
     }
 
@@ -53,6 +48,6 @@ public class GseScribeContentLocal implements GseScribeContent {
     }
 
     public String toString() {
-        return "Update msg from " + srcHandle;
+        return "Propagate msg from " + srcHandle;
     }
 }

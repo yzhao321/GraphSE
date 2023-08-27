@@ -46,6 +46,7 @@ public class GseClientEntrance {
     // Input args
     static final int GSE_CLIENT_ENTRANCE_INPUT_ARG_SHELL = 0;
     static final int GSE_CLIENT_ENTRANCE_INPUT_ARG_IP = 1;
+
     // Args list: [Launching Mode], [Network Address]
     private static void processArgs(String[] args) {
         // Select the launch mode (Cmd Shell Control Mode or Direct Mode)

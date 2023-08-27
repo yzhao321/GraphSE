@@ -7,29 +7,29 @@
     All rights reserved.
  */
 
-package ucsc.gse.publiclib;
+package ucsc.gse.msg;
 
 import rice.p2p.commonapi.Message;
 import rice.p2p.commonapi.NodeHandle;
 
 public class GseMsg implements Message {
-    public static final String GSE_MSG_RECEIV = "RECEIVE";
-    public static final String GSE_MSG_HALT = "HALT";
+    public static final String GSE_MSG_TYPE_RECEIV = "RECEIVE";
+    public static final String GSE_MSG_TYPE_HALT = "HALT";
 
-    String msgType;
     NodeHandle msgSrc;
+    String msgType;
 
-    public GseMsg(String msgType, NodeHandle msgSrc) {
-        this.msgType = msgType;
+    public GseMsg(NodeHandle msgSrc, String msgType) {
         this.msgSrc = msgSrc;
-    }
-
-    public String getMsgType() {
-        return msgType;
+        this.msgType = msgType;
     }
 
     public NodeHandle getSrc() {
         return msgSrc;
+    }
+
+    public String getType() {
+        return msgType;
     }
 
     public int getPriority() {

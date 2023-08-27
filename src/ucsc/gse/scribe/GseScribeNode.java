@@ -32,13 +32,19 @@ public class GseScribeNode implements Application, ScribeMultiClient {
     // Topics subscribed
     HashSet<Topic> appLocalTopics = new HashSet<>();
 
-    // Worker computation
+    /* **************************** Worker computation ********************************* */
+    // Worker graph storage
     GseGraph appLocalGraph = null;
+    // Graph vertex that connected with other graph
     List<Integer> appRemoteList = null;
+    // Operator map by topic
     ConcurrentHashMap<Topic, GseOperator> appLocalTopicOperator = new ConcurrentHashMap<>();
+    // Double flag (local/remote) for halt
     boolean appLocalHalt = false;
     boolean appRemoteHalt = false;
-    // Master management
+
+    /* **************************** Master management ********************************* */
+    // Halt map
     ConcurrentHashMap<NodeHandle, Boolean> appHaltMap = null;
 
     /* **************************** Const value ********************************* */
@@ -76,10 +82,11 @@ public class GseScribeNode implements Application, ScribeMultiClient {
             return;
         }
 
+        GseScribeContent gseContent = (GseScribeContent)content;
         // Computation: y = f(x)
-        int contentSignal = ((GseScribeContent)content).run(appLocalGraph);
+        int contentSignal = gseContent.run(appLocalGraph);
         // Statemachine: sig --> action
-        processSignal(contentSignal, (GseScribeContent)content);
+        processSignal(contentSignal, gseContent.getTopic());
     }
 
     @Override
@@ -145,7 +152,7 @@ public class GseScribeNode implements Application, ScribeMultiClient {
     }
 
     /* **************************** State Machine ******************************* */
-    private void processSignal(int contentSignal, GseScribeContent content) {
+    private void processSignal(int contentSignal, Topic topic) {
         switch (contentSignal) {
             case GseSignal.GSE_SIGNAL_LOCAL_HALT:
                 // Two flag for determining to halt
@@ -159,10 +166,10 @@ public class GseScribeNode implements Application, ScribeMultiClient {
                 // Only send the vertex connected with other node
                 GseGraph sendRomoteGraph = appLocalGraph.reduce(appRemoteList);
                 // Publish by setting local graph as remote graph of other node
-                GseScribeContentRemote publishContent = new GseScribeContentRemote(
-                    appLocalEndpoint.getLocalNodeHandle(), sendRomoteGraph, content.getTopic(), appLocalTopicOperator.get(content.getTopic())
+                GseScribeContentComputationRemote publishContent = new GseScribeContentComputationRemote(
+                    appLocalEndpoint.getLocalNodeHandle(), sendRomoteGraph, topic, appLocalTopicOperator.get(topic)
                 );
-                appLocalScribe.publish(content.getTopic(), publishContent);
+                appLocalScribe.publish(topic, publishContent);
                 break;
 
             case GseSignal.GSE_SIGNAL_REMOTE_HALT:

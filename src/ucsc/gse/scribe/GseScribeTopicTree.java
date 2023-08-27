@@ -41,32 +41,6 @@ public class GseScribeTopicTree extends Thread {
         treeComputation = computation;
     }
 
-    /* **************************** Topic tree computation ********************************* */
-    public void publishUpdate() {
-        treeNodeMap.get(treeRoot).publish(treeTopic, new GseScribeContentLocal(treeRoot, treeTopic, treeComputation.compOperator));
-    }
-
-    public void startComputation() {
-        System.out.println("\n");
-        for (int i = 0; i < treeComputation.compSteps; i++) {
-            System.out.println("------------------------------------------");
-            System.out.println("\t " + treeTopic + " step " + i);
-            publishUpdate();
-            try {
-                new SimpleTimeSource().sleep(GSE_TREE_STEP_WAIT_TIME);
-            } catch (InterruptedException e) {
-                System.out.println("Gse sim wait error: " + e);
-            }
-        }
-        System.out.println("------------------------------------------");
-        System.out.println("\t " + treeTopic + " iteration End\n");
-    }
-
-    @Override
-    public void run() {
-        startComputation();
-    }
-
     /* **************************** Topic tree initialization ********************************* */
     public void buildTree(ArrayList<GseScribeNode> scribeNodes) {
         // Subscribe same topic for all nodes
@@ -85,7 +59,7 @@ public class GseScribeTopicTree extends Thread {
         for (GseScribeNode scribeNode : scribeNodes) {
             treeNodeMap.put(scribeNode.appLocalEndpoint.getLocalNodeHandle(), scribeNode);
         }
-        treeRoot = getRoot(scribeNodes.get(0).appLocalEndpoint.getLocalNodeHandle());
+        treeRoot = computeRoot(scribeNodes.get(0).appLocalEndpoint.getLocalNodeHandle());
 
         // Add topic info
         for (GseScribeNode scribeNode : scribeNodes) {
@@ -105,6 +79,31 @@ public class GseScribeTopicTree extends Thread {
         }
     }
 
+    /* **************************** Topic tree computation ********************************* */
+    @Override
+    public void run() {
+        startComputation();
+    }
+
+    public void startComputation() {
+        System.out.println("\n");
+        for (int i = 0; i < treeComputation.compSteps; i++) {
+            System.out.println("------------------------------------------");
+            System.out.println("\t " + treeTopic + " step " + i);
+            publishComputation();
+            try {
+                new SimpleTimeSource().sleep(GSE_TREE_STEP_WAIT_TIME);
+            } catch (InterruptedException e) {
+                System.out.println("Gse sim wait error: " + e);
+            }
+        }
+        System.out.println("------------------------------------------");
+        System.out.println("\t " + treeTopic + " iteration End\n");
+    }
+
+    public void publishComputation() {
+        treeNodeMap.get(treeRoot).publish(treeTopic, new GseScribeContentComputationLocal(treeRoot, treeTopic, treeComputation.compOperator));
+    }
 
     /* **************************** Topic tree result viewing ********************************* */
     public void printTree() {
@@ -151,12 +150,12 @@ public class GseScribeTopicTree extends Thread {
     }
 
     /* **************************** Recursive tree searching ********************************* */
-    private NodeHandle getRoot(NodeHandle curHandle) {
+    private NodeHandle computeRoot(NodeHandle curHandle) {
         GseScribeNode node = treeNodeMap.get(curHandle);
         if (node.isRoot(treeTopic)) {
             return curHandle;
         }
-        return getRoot(node.getParent(treeTopic));
+        return computeRoot(node.getParent(treeTopic));
     }
 
     private void printChildren(NodeHandle curHandle, int depth) {

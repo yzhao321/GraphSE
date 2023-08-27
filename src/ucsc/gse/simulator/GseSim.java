@@ -97,7 +97,7 @@ public class GseSim {
             System.out.println("Error topic. ");
             return;
         }
-        simTopicTreeMap.get(treeStr).publishUpdate();
+        simTopicTreeMap.get(treeStr).publishComputation();
     }
 
     public void simLaunchComputation() {

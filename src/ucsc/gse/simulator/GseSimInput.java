@@ -85,7 +85,7 @@ public class GseSimInput {
     /* ****************************** Read File Procedure ****************************** */
     private void simInputReadGraph() {
         String line = null;
-        
+
         try {
             BufferedReader reader = new BufferedReader(new FileReader(inputFilePath));
             while ((line = reader.readLine()) != null) {
