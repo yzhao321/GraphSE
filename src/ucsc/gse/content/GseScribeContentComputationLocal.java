@@ -20,15 +20,18 @@ public class GseScribeContentComputationLocal implements GseScribeContent {
     NodeHandle srcHandle;
     Topic topic;
     GseOperator operator;
+    int state;
 
-    public GseScribeContentComputationLocal(NodeHandle srcHandle, Topic topic, GseOperator operator) {
+    public GseScribeContentComputationLocal(NodeHandle srcHandle, Topic topic, GseOperator operator, int state) {
         this.srcHandle = srcHandle;
         this.topic = topic;
         this.operator = operator;
+        this.state = state;
     }
 
     @Override
-    public int run(GseGraph localGraph) {
+    public int run(Object contentObject) {
+        GseGraph localGraph = (GseGraph) contentObject;
         int contentSignal;
         do {
             contentSignal  = GseSignal.GSE_SIGNAL_LOCAL_HALT;
@@ -50,6 +53,11 @@ public class GseScribeContentComputationLocal implements GseScribeContent {
     @Override
     public Topic getTopic() {
         return topic;
+    }
+
+    @Override
+    public int getState() {
+        return state;
     }
 
     public String toString() {

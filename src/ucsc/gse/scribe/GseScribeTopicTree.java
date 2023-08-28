@@ -21,7 +21,8 @@ import rice.p2p.commonapi.NodeHandle;
 import rice.p2p.scribe.Topic;
 
 import ucsc.gse.content.*;
-import ucsc.gse.graph.GseVertex;
+import ucsc.gse.graph.*;
+import ucsc.gse.publiclib.*;
 
 public class GseScribeTopicTree extends Thread {
     // Computation
@@ -102,7 +103,7 @@ public class GseScribeTopicTree extends Thread {
     }
 
     public void publishComputation() {
-        treeNodeMap.get(treeRoot).publish(treeTopic, new GseScribeContentComputationLocal(treeRoot, treeTopic, treeComputation.compOperator));
+        treeNodeMap.get(treeRoot).publish(treeTopic, new GseScribeContentComputationLocal(treeRoot, treeTopic, treeComputation.compOperator, GseState.GSE_STATE_COMP));
     }
 
     /* **************************** Topic tree result viewing ********************************* */

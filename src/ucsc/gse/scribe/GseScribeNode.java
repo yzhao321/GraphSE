@@ -11,6 +11,7 @@ package ucsc.gse.scribe;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 import rice.p2p.commonapi.*;
 import rice.p2p.scribe.Scribe;
@@ -78,13 +79,27 @@ public class GseScribeNode implements Application, ScribeMultiClient {
             System.out.println(this.appLocalEndpoint.getLocalNodeHandle() + " recv error content: " + content);
             return;
         }
-        if (appLocalGraph == null) {
-            return;
-        }
 
         GseScribeContent gseContent = (GseScribeContent)content;
-        // Computation: y = f(x)
-        int contentSignal = gseContent.run(appLocalGraph);
+        int contentSignal = GseSignal.GSE_SIGNAL_VOID;
+
+        switch (gseContent.getState()) {
+            case GseState.GSE_STATE_INIT:
+                contentSignal = gseContent.run(null);
+                break;
+
+            case GseState.GSE_STATE_COMP:
+                if (appLocalGraph == null) {
+                    return;
+                }
+                // Computation: y = f(x)
+                contentSignal = gseContent.run(appLocalGraph);
+                break;
+
+            default:
+                break;
+        }
+
         // Statemachine: sig --> action
         processSignal(contentSignal, gseContent.getTopic());
     }
@@ -151,40 +166,6 @@ public class GseScribeNode implements Application, ScribeMultiClient {
         appLocalGraph.print(head + "   ");
     }
 
-    /* **************************** State Machine ******************************* */
-    private void processSignal(int contentSignal, Topic topic) {
-        switch (contentSignal) {
-            case GseSignal.GSE_SIGNAL_LOCAL_HALT:
-                // Two flag for determining to halt
-                if (appLocalHalt && appRemoteHalt) {
-                    break;
-                }
-                appLocalHalt = true;
-
-            case GseSignal.GSE_SIGNAL_LOCAL_PUB:
-                appLocalHalt = false;
-                // Only send the vertex connected with other node
-                GseGraph sendRomoteGraph = appLocalGraph.reduce(appRemoteList);
-                // Publish by setting local graph as remote graph of other node
-                GseScribeContentComputationRemote publishContent = new GseScribeContentComputationRemote(
-                    appLocalEndpoint.getLocalNodeHandle(), sendRomoteGraph, topic, appLocalTopicOperator.get(topic)
-                );
-                appLocalScribe.publish(topic, publishContent);
-                break;
-
-            case GseSignal.GSE_SIGNAL_REMOTE_HALT:
-                appRemoteHalt = true;
-                break;
-
-            case GseSignal.GSE_SIGNAL_REMOTE_RECV:
-                appRemoteHalt = false;
-                break;
-
-            default:
-                break;
-        }
-    }
-
     /* **************************** Application Interface *********************** */
     @Override
     public void deliver(Id id, Message message) {
@@ -204,5 +185,63 @@ public class GseScribeNode implements Application, ScribeMultiClient {
     /* **************************** Java Object Interface *********************** */
     public String toString() {
         return "[GseScribeNode (" + appLocalEndpoint.getId() + ")]";
+    }
+
+    /* **************************** State Machine ******************************* */
+    private void processSignal(int contentSignal, Topic topic) {
+        if (!stateMachineFuncMap.containsKey(contentSignal)) {
+            System.out.println("Error signal! [" + contentSignal + "]");
+            return;
+        }
+        stateMachineFuncMap.get(contentSignal).apply(topic);
+    }
+
+    Map<Integer, Function<Topic, Boolean>> stateMachineFuncMap = new ConcurrentHashMap<>() {{
+        put(GseSignal.GSE_SIGNAL_LOCAL_HALT,    topic -> procSigLocalHalt(topic));
+        put(GseSignal.GSE_SIGNAL_LOCAL_PUB,     topic -> procSigLocalPub(topic));
+        put(GseSignal.GSE_SIGNAL_REMOTE_HALT,   topic -> procSigRemoteHalt(topic));
+        put(GseSignal.GSE_SIGNAL_REMOTE_RECV,   topic -> procSigRemoteReceive(topic));
+        put(GseSignal.GSE_SIGNAL_REQ_ADDR,      topic -> procSigReqAddr(topic));
+    }};
+
+    private boolean procSigLocalHalt(Topic topic) {
+        // Two flag for determining to halt
+        appLocalHalt = true;
+        if (appLocalHalt && appRemoteHalt) {
+            return true;
+        }
+        appLocalHalt = false;
+        sendLocalGraph(topic);
+        return true;
+    }
+
+    private boolean procSigLocalPub(Topic topic) {
+        appLocalHalt = false;
+        sendLocalGraph(topic);
+        return true;
+    }
+
+    private boolean procSigRemoteHalt(Topic topic) {
+        appRemoteHalt = true;
+        return true;
+    }
+
+    private boolean procSigRemoteReceive(Topic topic) {
+        appRemoteHalt = false;
+        return true;
+    }
+
+    private boolean procSigReqAddr(Topic topic) {
+        return true;
+    }
+
+    private void sendLocalGraph(Topic topic) {
+        // Only send the vertex connected with other node
+        GseGraph sendRomoteGraph = appLocalGraph.reduce(appRemoteList);
+        // Publish by setting local graph as remote graph of other node
+        GseScribeContentComputationRemote publishContent = new GseScribeContentComputationRemote(
+            appLocalEndpoint.getLocalNodeHandle(), sendRomoteGraph, topic, appLocalTopicOperator.get(topic), GseState.GSE_STATE_COMP
+        );
+        appLocalScribe.publish(topic, publishContent);
     }
 }

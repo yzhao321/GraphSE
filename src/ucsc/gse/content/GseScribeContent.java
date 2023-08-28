@@ -13,10 +13,9 @@ import rice.p2p.scribe.ScribeContent;
 import rice.p2p.scribe.Topic;
 import rice.p2p.commonapi.NodeHandle;
 
-import ucsc.gse.graph.GseGraph;
-
 public interface GseScribeContent extends ScribeContent {
-    public int run(GseGraph copntentGraph);
+    public int run(Object contentObject);
     public NodeHandle getSrc();
     public Topic getTopic();
+    public int getState();
 }
