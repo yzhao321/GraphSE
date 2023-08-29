@@ -20,13 +20,11 @@ public class GseScribeContentComputationLocal implements GseScribeContent {
     NodeHandle srcHandle;
     Topic topic;
     GseOperator operator;
-    int state;
 
-    public GseScribeContentComputationLocal(NodeHandle srcHandle, Topic topic, GseOperator operator, int state) {
+    public GseScribeContentComputationLocal(NodeHandle srcHandle, Topic topic, GseOperator operator) {
         this.srcHandle = srcHandle;
         this.topic = topic;
         this.operator = operator;
-        this.state = state;
     }
 
     @Override
@@ -53,11 +51,6 @@ public class GseScribeContentComputationLocal implements GseScribeContent {
     @Override
     public Topic getTopic() {
         return topic;
-    }
-
-    @Override
-    public int getState() {
-        return state;
     }
 
     public String toString() {

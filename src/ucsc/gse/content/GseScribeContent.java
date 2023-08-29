@@ -17,5 +17,4 @@ public interface GseScribeContent extends ScribeContent {
     public int run(Object contentObject);
     public NodeHandle getSrc();
     public Topic getTopic();
-    public int getState();
 }

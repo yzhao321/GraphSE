@@ -23,7 +23,6 @@ import rice.p2p.scribe.Topic;
 
 import ucsc.gse.content.*;
 import ucsc.gse.graph.*;
-import ucsc.gse.publiclib.*;
 
 public class GseScribeTopicTree extends Thread {
     // Computation
@@ -111,7 +110,8 @@ public class GseScribeTopicTree extends Thread {
             node = treeLocalNodeMap.get(treeRoot);
         }
         node.publish(treeTopic, new GseScribeContentComputationLocal(
-            node.appLocalEndpoint.getLocalNodeHandle(), treeTopic, treeComputation.compOperator, GseState.GSE_STATE_COMP));
+            node.appLocalEndpoint.getLocalNodeHandle(), treeTopic, treeComputation.compOperator
+        ));
     }
 
     /* **************************** Topic tree result viewing ********************************* */

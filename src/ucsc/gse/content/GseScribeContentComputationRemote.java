@@ -20,14 +20,12 @@ public class GseScribeContentComputationRemote implements GseScribeContent {
     GseGraph remoteGraph;
     Topic topic;
     GseOperator operator;
-    int state;
 
-    public GseScribeContentComputationRemote(NodeHandle srcHandle, GseGraph remoteGraph, Topic topic, GseOperator operator, int state) {
+    public GseScribeContentComputationRemote(NodeHandle srcHandle, GseGraph remoteGraph, Topic topic, GseOperator operator) {
         this.srcHandle = srcHandle;
         this.remoteGraph = remoteGraph;
         this.topic = topic;
         this.operator = operator;
-        this.state = state;
     }
 
     @Override
@@ -48,11 +46,6 @@ public class GseScribeContentComputationRemote implements GseScribeContent {
     @Override
     public Topic getTopic() {
         return topic;
-    }
-
-    @Override
-    public int getState() {
-        return state;
     }
 
     public String toString() {

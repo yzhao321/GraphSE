@@ -175,26 +175,11 @@ public class GseScribeNode implements Application, ScribeMultiClient {
         if (content == null) {
             return GseSignal.GSE_SIGNAL_VOID;
         }
-
-        int signal = GseSignal.GSE_SIGNAL_VOID;
-        switch (content.getState()) {
-            case GseState.GSE_STATE_INIT:
-                signal = content.run(null);
-                break;
-
-            case GseState.GSE_STATE_COMP:
-                if (appLocalGraph == null) {
-                    break;
-                }
-                // Computation: y = f(x)
-                signal =  content.run(appLocalGraph);
-                break;
-
-            default:
-                break;
+        if (appLocalGraph == null) {
+            return GseSignal.GSE_SIGNAL_VOID;
         }
-
-        return signal;
+        // Computation: y = f(x)
+        return content.run(appLocalGraph);
     }
 
     private void processSignal(int contentSignal, Topic topic) {
@@ -252,7 +237,7 @@ public class GseScribeNode implements Application, ScribeMultiClient {
         GseGraph sendRomoteGraph = appLocalGraph.reduce(appRemoteList);
         // Publish by setting local graph as remote graph of other node
         GseScribeContentComputationRemote publishContent = new GseScribeContentComputationRemote(
-            appLocalEndpoint.getLocalNodeHandle(), sendRomoteGraph, topic, appLocalTopicOperator.get(topic), GseState.GSE_STATE_COMP
+            appLocalEndpoint.getLocalNodeHandle(), sendRomoteGraph, topic, appLocalTopicOperator.get(topic)
         );
         appLocalScribe.publish(topic, publishContent);
     }

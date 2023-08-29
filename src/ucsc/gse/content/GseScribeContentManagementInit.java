@@ -18,10 +18,9 @@ public class GseScribeContentManagementInit implements GseScribeContent {
     Topic topic;
     int state;
 
-    public GseScribeContentManagementInit(NodeHandle srcHandle, Topic topic, int state) {
+    public GseScribeContentManagementInit(NodeHandle srcHandle, Topic topic) {
         this.srcHandle = srcHandle;
         this.topic = topic;
-        this.state = state;
     }
 
     @Override
@@ -37,10 +36,5 @@ public class GseScribeContentManagementInit implements GseScribeContent {
     @Override
     public Topic getTopic() {
         return topic;
-    }
-
-    @Override
-    public int getState() {
-        return state;
     }
 }
