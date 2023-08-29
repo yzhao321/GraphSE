@@ -31,7 +31,7 @@ public class GseSimNode {
 
     /* ****************************** Default value ****************************** */
     public static final int GSE_SIM_NODE_LOCAL_NUM = 1;
-    public static final int GSE_SIM_NODE_EXTERN_NUM = 10;
+    public static final int GSE_SIM_NODE_EXTERN_NUM = 2;
 
     /* ****************************** Interface for set/get ********************** */
     public void simNodeSetLocalNum(int nodeNum) {

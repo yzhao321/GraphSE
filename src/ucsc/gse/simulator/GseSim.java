@@ -36,7 +36,7 @@ public class GseSim {
     InetSocketAddress bootSocketAddr;
 
     // Gse scribe node list
-    ArrayList<GseScribeNode> simScribeNodes = new ArrayList<GseScribeNode>();
+    List<GseScribeNode> simLocalScribeNodes = new ArrayList<GseScribeNode>();
     // Gse scribe topic tree map
     Map<String, GseScribeTopicTree> simTopicTreeMap = new ConcurrentHashMap<>();
 
@@ -146,7 +146,7 @@ public class GseSim {
             for (int i = 0; i < simNode.simNodeGetLocalNum(); i++) {
                 PastryNode pastryNode = factory.newNode();
                 GseScribeNode scribeNode = new GseScribeNode(pastryNode);
-                simScribeNodes.add(scribeNode);
+                simLocalScribeNodes.add(scribeNode);
                 pastryNode.boot(bootSocketAddr);
 
                 // Wait for node ready
@@ -178,7 +178,7 @@ public class GseSim {
             );
 
             GseScribeTopicTree topicTree = new GseScribeTopicTree(compTopic, simScribeComputation);
-            topicTree.buildTree(simScribeNodes);
+            topicTree.joinTreeTopic(simLocalScribeNodes);
             simTopicTreeMap.put(compStr, topicTree);
         }
     }
@@ -192,7 +192,7 @@ public class GseSim {
     }
 
     private void simSendInput() {
-        for (GseScribeNode worker : simScribeNodes) {
+        for (GseScribeNode worker : simLocalScribeNodes) {
             simNode.simNodeAddWorkerList(worker);
         }
         simInput.simInputSendInput(simNode.simNodeGetWokerList());

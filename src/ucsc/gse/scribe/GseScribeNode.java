@@ -79,27 +79,10 @@ public class GseScribeNode implements Application, ScribeMultiClient {
             System.out.println(this.appLocalEndpoint.getLocalNodeHandle() + " recv error content: " + content);
             return;
         }
-
         GseScribeContent gseContent = (GseScribeContent)content;
-        int contentSignal = GseSignal.GSE_SIGNAL_VOID;
 
-        switch (gseContent.getState()) {
-            case GseState.GSE_STATE_INIT:
-                contentSignal = gseContent.run(null);
-                break;
-
-            case GseState.GSE_STATE_COMP:
-                if (appLocalGraph == null) {
-                    return;
-                }
-                // Computation: y = f(x)
-                contentSignal = gseContent.run(appLocalGraph);
-                break;
-
-            default:
-                break;
-        }
-
+        // Run content --> sig
+        int contentSignal = processContent(gseContent);
         // Statemachine: sig --> action
         processSignal(contentSignal, gseContent.getTopic());
     }
@@ -188,7 +171,36 @@ public class GseScribeNode implements Application, ScribeMultiClient {
     }
 
     /* **************************** State Machine ******************************* */
+    private int processContent(GseScribeContent content) {
+        if (content == null) {
+            return GseSignal.GSE_SIGNAL_VOID;
+        }
+
+        int signal = GseSignal.GSE_SIGNAL_VOID;
+        switch (content.getState()) {
+            case GseState.GSE_STATE_INIT:
+                signal = content.run(null);
+                break;
+
+            case GseState.GSE_STATE_COMP:
+                if (appLocalGraph == null) {
+                    break;
+                }
+                // Computation: y = f(x)
+                signal =  content.run(appLocalGraph);
+                break;
+
+            default:
+                break;
+        }
+
+        return signal;
+    }
+
     private void processSignal(int contentSignal, Topic topic) {
+        if (contentSignal == GseSignal.GSE_SIGNAL_VOID) {
+            return;
+        }
         if (!stateMachineFuncMap.containsKey(contentSignal)) {
             System.out.println("Error signal! [" + contentSignal + "]");
             return;
@@ -206,11 +218,10 @@ public class GseScribeNode implements Application, ScribeMultiClient {
 
     private boolean procSigLocalHalt(Topic topic) {
         // Two flag for determining to halt
-        appLocalHalt = true;
         if (appLocalHalt && appRemoteHalt) {
             return true;
         }
-        appLocalHalt = false;
+        appLocalHalt = true;
         sendLocalGraph(topic);
         return true;
     }
@@ -227,6 +238,7 @@ public class GseScribeNode implements Application, ScribeMultiClient {
     }
 
     private boolean procSigRemoteReceive(Topic topic) {
+        appLocalHalt = false;
         appRemoteHalt = false;
         return true;
     }

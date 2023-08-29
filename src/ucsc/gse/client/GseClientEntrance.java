@@ -46,19 +46,30 @@ public class GseClientEntrance {
     // Input args
     static final int GSE_CLIENT_ENTRANCE_INPUT_ARG_SHELL = 0;
     static final int GSE_CLIENT_ENTRANCE_INPUT_ARG_IP = 1;
+    static final int GSE_CLIENT_ENTRANCE_INPUT_ARG_LOCAL_NODE = 2;
+    static final int GSE_CLIENT_ENTRANCE_INPUT_ARG_EXTERN_NODE = 3;
 
-    // Args list: [Launching Mode], [Network Address]
+    // Args list: [Launching Mode], [Network Address], [Local node num], [Extern node num]
     private static void processArgs(String[] args) {
-        // Select the launch mode (Cmd Shell Control Mode or Direct Mode)
-        if (args.length == 0) {
+        // Launch with the cmd shell client default
+        if (args.length <= GSE_CLIENT_ENTRANCE_INPUT_ARG_SHELL) {
             ifLaunchWithShell = true;
-        } else if (args.length > GSE_CLIENT_ENTRANCE_INPUT_ARG_SHELL) {
-            ifLaunchWithShell = args[GSE_CLIENT_ENTRANCE_INPUT_ARG_SHELL].equals("Shell") ? true : false;
+            return;
         }
+        // Config the launch mode if it is given in the args (cmd shell control mode or direct mode)
+        ifLaunchWithShell = args[GSE_CLIENT_ENTRANCE_INPUT_ARG_SHELL].equals("Shell") ? true : false;
 
-        // Config the network if it is given in the args, which is required in a distributed environment to boot a same address and port
-        if (args.length > GSE_CLIENT_ENTRANCE_INPUT_ARG_IP) {
-            clientSimulator.simSetNetworkAddress(args[GSE_CLIENT_ENTRANCE_INPUT_ARG_IP]);
+        if (args.length <= GSE_CLIENT_ENTRANCE_INPUT_ARG_IP) {
+            return;
         }
+        // Config the network if it is given in the args, which is required in a distributed environment to boot a same address and port
+        clientSimulator.simSetNetworkAddress(args[GSE_CLIENT_ENTRANCE_INPUT_ARG_IP]);
+
+        if (args.length <= GSE_CLIENT_ENTRANCE_INPUT_ARG_EXTERN_NODE) {
+            return;
+        }
+        // Confige the node num if it is given in the args, including local node and extern node
+        clientSimulator.simSetNodeNum(Integer.parseInt(args[GSE_CLIENT_ENTRANCE_INPUT_ARG_LOCAL_NODE]),
+            Integer.parseInt(args[GSE_CLIENT_ENTRANCE_INPUT_ARG_EXTERN_NODE]));
     }
 }

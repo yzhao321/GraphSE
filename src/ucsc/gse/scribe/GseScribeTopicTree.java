@@ -9,7 +9,7 @@
 
 package ucsc.gse.scribe;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
@@ -30,7 +30,7 @@ public class GseScribeTopicTree extends Thread {
     GseScribeComputation treeComputation;
 
     // Tree management
-    Map<NodeHandle, GseScribeNode> treeNodeMap = new ConcurrentHashMap<>(); // Nodes in this topic
+    Map<NodeHandle, GseScribeNode> treeLocalNodeMap = new ConcurrentHashMap<>(); // Nodes in this topic
     NodeHandle treeRoot = null; // Tree root of this topic
 
     // Scribe tree waiting heuristic const value
@@ -43,7 +43,7 @@ public class GseScribeTopicTree extends Thread {
     }
 
     /* **************************** Topic tree initialization ********************************* */
-    public void buildTree(ArrayList<GseScribeNode> scribeNodes) {
+    public void joinTreeTopic(List<GseScribeNode> scribeNodes) {
         // Subscribe same topic for all nodes
         for (GseScribeNode scribeNode : scribeNodes) {
             scribeNode.subscribe(treeTopic);
@@ -58,7 +58,7 @@ public class GseScribeTopicTree extends Thread {
 
         // Record application table and root
         for (GseScribeNode scribeNode : scribeNodes) {
-            treeNodeMap.put(scribeNode.appLocalEndpoint.getLocalNodeHandle(), scribeNode);
+            treeLocalNodeMap.put(scribeNode.appLocalEndpoint.getLocalNodeHandle(), scribeNode);
         }
         treeRoot = computeRoot(scribeNodes.get(0).appLocalEndpoint.getLocalNodeHandle());
 
@@ -70,7 +70,7 @@ public class GseScribeTopicTree extends Thread {
     }
 
     public void initGraphTopicVal() {
-        for (GseScribeNode scribeNode : treeNodeMap.values()) {
+        for (GseScribeNode scribeNode : treeLocalNodeMap.values()) {
             if (scribeNode.appLocalGraph == null) {
                 continue;
             }
@@ -103,7 +103,7 @@ public class GseScribeTopicTree extends Thread {
     }
 
     public void publishComputation() {
-        treeNodeMap.get(treeRoot).publish(treeTopic, new GseScribeContentComputationLocal(treeRoot, treeTopic, treeComputation.compOperator, GseState.GSE_STATE_COMP));
+        treeLocalNodeMap.get(treeRoot).publish(treeTopic, new GseScribeContentComputationLocal(treeRoot, treeTopic, treeComputation.compOperator, GseState.GSE_STATE_COMP));
     }
 
     /* **************************** Topic tree result viewing ********************************* */
@@ -117,7 +117,7 @@ public class GseScribeTopicTree extends Thread {
 
     public void printGroupNum() {
         Set<Integer> groupIdSet = new HashSet<>();
-        for (GseScribeNode node : treeNodeMap.values()) {
+        for (GseScribeNode node : treeLocalNodeMap.values()) {
             if (node.appLocalGraph == null) {
                 continue;
             }
@@ -133,7 +133,7 @@ public class GseScribeTopicTree extends Thread {
     public void printMax() {
         int maxNum = 0;
         GseVertex maxVertex = null;
-        for (GseScribeNode node : treeNodeMap.values()) {
+        for (GseScribeNode node : treeLocalNodeMap.values()) {
             if (node.appLocalGraph == null) {
                 continue;
             }
@@ -152,7 +152,7 @@ public class GseScribeTopicTree extends Thread {
 
     /* **************************** Recursive tree searching ********************************* */
     private NodeHandle computeRoot(NodeHandle curHandle) {
-        GseScribeNode node = treeNodeMap.get(curHandle);
+        GseScribeNode node = treeLocalNodeMap.get(curHandle);
         if (node.isRoot(treeTopic)) {
             return curHandle;
         }
@@ -166,10 +166,10 @@ public class GseScribeTopicTree extends Thread {
             head += "   ";
         }
         System.out.println(head + curHandle.getId().toString());
-        treeNodeMap.get(curHandle).printGraph(head);
+        treeLocalNodeMap.get(curHandle).printGraph(head);
 
         // Print children
-        Collection<NodeHandle> children = treeNodeMap.get(curHandle).getChildren(treeTopic);
+        Collection<NodeHandle> children = treeLocalNodeMap.get(curHandle).getChildren(treeTopic);
         for (NodeHandle child : children) {
             printChildren(child, depth + 1);
         }
