@@ -10,6 +10,7 @@
 package ucsc.gse.scribe;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
@@ -103,7 +104,9 @@ public class GseScribeTopicTree extends Thread {
     }
 
     public void publishComputation() {
-        treeLocalNodeMap.get(treeRoot).publish(treeTopic, new GseScribeContentComputationLocal(treeRoot, treeTopic, treeComputation.compOperator, GseState.GSE_STATE_COMP));
+        // GseScribeNode node = treeLocalNodeMap.get(treeRoot);
+        GseScribeNode node = new ArrayList<>(treeLocalNodeMap.values()).get(0);
+        node.publish(treeTopic, new GseScribeContentComputationLocal(treeRoot, treeTopic, treeComputation.compOperator, GseState.GSE_STATE_COMP));
     }
 
     /* **************************** Topic tree result viewing ********************************* */
