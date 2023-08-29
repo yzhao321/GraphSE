@@ -104,9 +104,14 @@ public class GseScribeTopicTree extends Thread {
     }
 
     public void publishComputation() {
-        // GseScribeNode node = treeLocalNodeMap.get(treeRoot);
-        GseScribeNode node = new ArrayList<>(treeLocalNodeMap.values()).get(0);
-        node.publish(treeTopic, new GseScribeContentComputationLocal(treeRoot, treeTopic, treeComputation.compOperator, GseState.GSE_STATE_COMP));
+        GseScribeNode node;
+        if (treeRoot == null) {
+            node = new ArrayList<>(treeLocalNodeMap.values()).get(0);
+        } else {
+            node = treeLocalNodeMap.get(treeRoot);
+        }
+        node.publish(treeTopic, new GseScribeContentComputationLocal(
+            node.appLocalEndpoint.getLocalNodeHandle(), treeTopic, treeComputation.compOperator, GseState.GSE_STATE_COMP));
     }
 
     /* **************************** Topic tree result viewing ********************************* */
@@ -155,6 +160,9 @@ public class GseScribeTopicTree extends Thread {
 
     /* **************************** Recursive tree searching ********************************* */
     private NodeHandle computeRoot(NodeHandle curHandle) {
+        if (!treeLocalNodeMap.containsKey(curHandle)) {
+            return null;
+        }
         GseScribeNode node = treeLocalNodeMap.get(curHandle);
         if (node.isRoot(treeTopic)) {
             return curHandle;
@@ -163,6 +171,9 @@ public class GseScribeTopicTree extends Thread {
     }
 
     private void printChildren(NodeHandle curHandle, int depth) {
+        if (curHandle == null) {
+            return;
+        }
         // Print tab for each level before current node
         String head = "";
         for (int i = 0; i < depth; i++) {

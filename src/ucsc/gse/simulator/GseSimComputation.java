@@ -29,7 +29,7 @@ public class GseSimComputation {
     public static final String GSE_COMP_TOPIC_PR = "PR";
     public static final String GSE_COMP_TOPIC_SP = "SP";
     // Computation steps
-    public static final int GSE_COMP_CC_STEPS = 10;
+    public static final int GSE_COMP_CC_STEPS = 5;
     public static final int GSE_COMP_PR_STEPS = 5;
     public static final int GSE_COMP_SP_STEPS = 5;
 
