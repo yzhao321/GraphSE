@@ -24,6 +24,7 @@ import ucsc.gse.content.*;
 import ucsc.gse.graph.*;
 import ucsc.gse.operator.*;
 import ucsc.gse.publiclib.*;
+import ucsc.gse.msg.*;
 
 public class GseScribeNode implements Application, ScribeMultiClient {
     // Pastry for routing msg in P2P network
@@ -43,6 +44,10 @@ public class GseScribeNode implements Application, ScribeMultiClient {
     // Double flag (local/remote) for halt
     boolean appLocalHalt = false;
     boolean appRemoteHalt = false;
+
+    /* **************************** Worker management ********************************* */
+    // Master handle
+    NodeHandle masterHandle = null;
 
     /* **************************** Master management ********************************* */
     // Halt map
@@ -152,6 +157,12 @@ public class GseScribeNode implements Application, ScribeMultiClient {
     /* **************************** Application Interface *********************** */
     @Override
     public void deliver(Id id, Message message) {
+        if (!(message instanceof GseMsg)) {
+            System.out.println(this.appLocalEndpoint.getLocalNodeHandle() + " recv error msg: " + message);
+            return;
+        }
+        GseMsg gseMessage = (GseMsg) message;
+        System.out.println(this.appLocalEndpoint.getLocalNodeHandle() + " recv msg: " + gseMessage.getSrc());
         return;
     }
 
@@ -175,6 +186,8 @@ public class GseScribeNode implements Application, ScribeMultiClient {
         if (content == null) {
             return GseSignal.GSE_SIGNAL_VOID;
         }
+
+        masterHandle = content.getSrc();
         if (appLocalGraph == null) {
             return GseSignal.GSE_SIGNAL_VOID;
         }
@@ -229,6 +242,11 @@ public class GseScribeNode implements Application, ScribeMultiClient {
     }
 
     private boolean procSigReqAddr(Topic topic) {
+        if (masterHandle == null) {
+            System.out.println("Error master handle");
+            return false;
+        }
+        appLocalEndpoint.route(null, new GseMsg(appLocalEndpoint.getLocalNodeHandle(), "NODE_ADDR"), masterHandle);
         return true;
     }
 

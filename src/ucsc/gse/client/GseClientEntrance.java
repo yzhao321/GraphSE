@@ -48,8 +48,9 @@ public class GseClientEntrance {
     static final int GSE_CLIENT_ENTRANCE_INPUT_ARG_IP = 1;
     static final int GSE_CLIENT_ENTRANCE_INPUT_ARG_LOCAL_NODE = 2;
     static final int GSE_CLIENT_ENTRANCE_INPUT_ARG_EXTERN_NODE = 3;
+    static final int GSE_CLIENT_ENTRANCE_INPUT_ARG_INPUT_FILE_NAME = 4;
 
-    // Args list: [Launching Mode], [Network Address], [Local node num], [Extern node num]
+    // Args list: [Launching Mode], [Network Address], [Local node num], [Extern node num], [Input File Name]
     private static void processArgs(String[] args) {
         // Launch with the cmd shell client default
         if (args.length <= GSE_CLIENT_ENTRANCE_INPUT_ARG_SHELL) {
@@ -71,5 +72,11 @@ public class GseClientEntrance {
         // Confige the node num if it is given in the args, including local node and extern node
         clientSimulator.simSetNodeNum(Integer.parseInt(args[GSE_CLIENT_ENTRANCE_INPUT_ARG_LOCAL_NODE]),
             Integer.parseInt(args[GSE_CLIENT_ENTRANCE_INPUT_ARG_EXTERN_NODE]));
+
+        if (args.length <= GSE_CLIENT_ENTRANCE_INPUT_ARG_INPUT_FILE_NAME) {
+            return;
+        }
+        // Confige the input file if it is given in the args
+        clientSimulator.simSetInput(args[GSE_CLIENT_ENTRANCE_INPUT_ARG_INPUT_FILE_NAME], false);
     }
 }

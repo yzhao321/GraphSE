@@ -83,6 +83,7 @@ public class GseScribeTopicTree extends Thread {
     /* **************************** Topic tree computation ********************************* */
     @Override
     public void run() {
+        publishManagementInit();
         startComputation();
     }
 
@@ -111,6 +112,18 @@ public class GseScribeTopicTree extends Thread {
         }
         node.publish(treeTopic, new GseScribeContentComputationLocal(
             node.appLocalEndpoint.getLocalNodeHandle(), treeTopic, treeComputation.compOperator
+        ));
+    }
+
+    public void publishManagementInit() {
+        GseScribeNode node;
+        if (treeRoot == null) {
+            node = new ArrayList<>(treeLocalNodeMap.values()).get(0);
+        } else {
+            node = treeLocalNodeMap.get(treeRoot);
+        }
+        node.publish(treeTopic, new GseScribeContentManagementInit(
+            node.appLocalEndpoint.getLocalNodeHandle(), treeTopic
         ));
     }
 

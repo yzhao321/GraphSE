@@ -16,7 +16,6 @@ import ucsc.gse.publiclib.GseSignal;
 public class GseScribeContentManagementInit implements GseScribeContent {
     NodeHandle srcHandle;
     Topic topic;
-    int state;
 
     public GseScribeContentManagementInit(NodeHandle srcHandle, Topic topic) {
         this.srcHandle = srcHandle;
