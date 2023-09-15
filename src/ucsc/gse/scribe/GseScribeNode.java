@@ -72,6 +72,12 @@ public class GseScribeNode implements Application, ScribeMultiClient {
         appLocalScribe.subscribe(topic, this, null, null);
     }
 
+    public void publishByRoot() {
+        if (isRootOfTopics()) {
+            return;
+        }
+    }
+
     /* **************************** Scribe Interface **************************** */
     @Override
     public boolean anycast(Topic topic, ScribeContent content) {

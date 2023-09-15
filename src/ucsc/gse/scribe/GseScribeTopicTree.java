@@ -35,7 +35,7 @@ public class GseScribeTopicTree extends Thread {
 
     // Scribe tree waiting heuristic const value
     public static final int GSE_TREE_BUILD_WAIT_TIME = 1000;
-    public static final int GSE_TREE_STEP_WAIT_TIME = 2000;
+    public static final int GSE_TREE_STEP_WAIT_TIME = 500;
 
     public GseScribeTopicTree(Topic topic, GseScribeComputation computation) {
         treeTopic = topic;
@@ -83,15 +83,21 @@ public class GseScribeTopicTree extends Thread {
     /* **************************** Topic tree computation ********************************* */
     @Override
     public void run() {
-        publishManagementInit();
+        long startTime = new SimpleTimeSource().currentTimeMillis();
+        System.out.println("\n------------------------------------------");
+        System.out.println("\t" + treeTopic + " start: " + startTime);
+
         startComputation();
+
+        long endTime = new SimpleTimeSource().currentTimeMillis();
+        System.out.println("------------------------------------------");
+        System.out.println("\t" + treeTopic + " end: " + endTime);
+        System.out.println("\t" + treeTopic + " total time: " + (endTime - startTime));
+        System.out.println("------------------------------------------");
     }
 
     public void startComputation() {
-        System.out.println("\n");
         for (int i = 0; i < treeComputation.compSteps; i++) {
-            System.out.println("------------------------------------------");
-            System.out.println("\t " + treeTopic + " step " + i);
             publishComputation();
             try {
                 new SimpleTimeSource().sleep(GSE_TREE_STEP_WAIT_TIME);
@@ -99,8 +105,6 @@ public class GseScribeTopicTree extends Thread {
                 System.out.println("Gse sim wait error: " + e);
             }
         }
-        System.out.println("------------------------------------------");
-        System.out.println("\t " + treeTopic + " iteration End\n");
     }
 
     public void publishComputation() {
