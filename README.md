@@ -7,13 +7,13 @@ The GraphSE engine code is in ./src/ucsc/gse
 ### Structure
 ```
 - gse
---- client 		 (The entry of GraphSE engine)
+--- client 	 (The entry of GraphSE engine)
 --- content 	 (Publication message type among application tree)
---- graph 		 (Graph data struture)
---- msg 		 (Communication message)
+--- graph 	 (Graph data struture)
+--- msg 	 (Communication message)
 --- operator 	 (Graph computation operator, e.g., PageRank)
 --- publiclib 	 (Engine public define)
---- scribe 		 (Pub/Sub tree for communication of edge node)
+--- scribe 	 (Pub/Sub tree for communication of edge node)
 --- simulator 	 (Simulator to run experiments with various config)
 ```
 
@@ -61,8 +61,8 @@ GraphSE:/>>?
 =================================================================
 Name			Description
 -----------------------------------------------------------------
-?				show cmd list
-net				set network by: net [ip addr]
+?			show cmd list
+net			set network by: net [ip addr]
 node			set node by: node [local] [extern]
 input			set input by: input [fileName] [direction](0/1)
 comp			add computation by: comp [treeName](CC/PR/SP)
@@ -71,7 +71,7 @@ print			print scribe tree by: print [treeName]
 step			trigger superstep step by step by: step [treeName]
 launch			launch computation
 group			print group result by: group [treeName]
-max				print max result by: max [treeName]
+max			print max result by: max [treeName]
 =================================================================
 
 GraphSE:/>>
