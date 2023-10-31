@@ -4,39 +4,31 @@ A Framework for Graph Stream Edge Processing
 ## Architecture
 The GraphSE engine code is in ./src/ucsc/gse
 
-### Structure
+### Directory Structure
 ```
-- gse
---- client 	 (The entry of GraphSE engine)
---- content 	 (Publication message type among application tree)
---- graph 	 (Graph data struture)
---- msg 	 (Communication message)
---- operator 	 (Graph computation operator, e.g., PageRank)
---- publiclib 	 (Engine public define)
---- scribe 	 (Pub/Sub tree for communication of edge node)
---- simulator 	 (Simulator to run experiments with various config)
+─ gse
+|── client 	 (The entry of GraphSE engine)
+|── content 	 (Publication message type among application tree)
+|── graph 	 (Graph data struture)
+|── msg 	 (Communication message)
+|── operator 	 (Graph computation operator, e.g., PageRank)
+|── publiclib 	 (Engine public define)
+|── scribe 	 (Pub/Sub tree for communication of edge node)
+|── simulator 	 (Simulator to run experiments with various config)
 ```
 
 ### Platform
 ```
-			------------------------
-			|       Graph SE       |
-			|   ----------------   |
-			|   |    Scribe    |   |
-			|   |  ----------  |   |
-			|   |  | Pastry |  |   |
-			|   |  ----------  |   |
-			|   |              |   |
-			|   ----------------   |
-			|                      |
-			------------------------
+|──────────────────────|
+|       Graph SE       |      # Graph Processing
+|   |──────────────|   |
+|   |    Scribe    |   |      # Pub/Sub Pattern
+|   |  |────────|  |   |
+|   |  | Pastry |  |   |      # Edge Processing
+|   |  |────────|  |   |
+|   |──────────────|   |
+|──────────────────────|
 ```
-- GraphSE 
-  - Graph Processing
-- Scribe
-  - Pub/Sub Pattern
-- Pastry
-  - Edge Processing
 
 ## Get Started
 ### Compile and Run
